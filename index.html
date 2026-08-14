@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Словарь устаревших слов (более 1000)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #2c1e16;
+            background-image: radial-gradient(ellipse at 30% 40%, #4a3426 0%, #1f150e 100%);
+            min-height: 100vh;
+            color: #e6dccb;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(38, 28, 20, 0.85);
+            backdrop-filter: blur(2px);
+            border-radius: 32px;
+            padding: 30px 30px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 215, 140, 0.15);
+            border: 1px solid rgba(200, 160, 120, 0.2);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(200, 160, 120, 0.2);
+        }
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: #eedbca;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        .logo span {
+            display: block;
+            font-size: 12px;
+            color: #b8a38f;
+            letter-spacing: 4px;
+            margin-top: 2px;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 18px;
+            margin-bottom: 28px;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 60px;
+            border: 1px solid rgba(200, 160, 120, 0.1);
+        }
+        .controls .search-wrap {
+            flex: 1 1 220px;
+            position: relative;
+        }
+        .controls .search-wrap input {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 40px;
+            border: 1px solid rgba(200, 160, 120, 0.25);
+            background: rgba(20, 14, 10, 0.7);
+            color: #e6dccb;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .controls .search-wrap input:focus {
+            border-color: #c9a87c;
+            background: rgba(30, 20, 16, 0.8);
+        }
+        .controls .search-wrap input::placeholder {
+            color: #8a7a6a;
+        }
+        .controls .search-wrap .autocomplete {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: #2a1e16;
+            border: 1px solid rgba(200, 160, 120, 0.2);
+            border-radius: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 20;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        }
+        .controls .search-wrap .autocomplete div {
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-bottom: 1px solid rgba(200, 160, 120, 0.05);
+        }
+        .controls .search-wrap .autocomplete div:hover {
+            background: rgba(200, 160, 120, 0.15);
+        }
+        .controls .filters {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .controls .filters .filter-btn {
+            background: transparent;
+            border: 1px solid rgba(200, 160, 120, 0.15);
+            color: #b8a38f;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .controls .filters .filter-btn.active {
+            background: #c9a87c;
+            border-color: #c9a87c;
+            color: #1f150e;
+        }
+        .controls .filters .filter-btn:hover {
+            background: rgba(200, 160, 120, 0.15);
+            color: #eedbca;
+        }
+        .controls .sort-select {
+            background: rgba(20, 14, 10, 0.7);
+            border: 1px solid rgba(200, 160, 120, 0.2);
+            color: #dccdbd;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+            outline: none;
+        }
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .word-card {
+            background: rgba(30, 22, 16, 0.7);
+            border-radius: 20px;
+            padding: 18px 20px 16px;
+            border: 1px solid rgba(200, 160, 120, 0.12);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            cursor: default;
+            backdrop-filter: blur(2px);
+            position: relative;
+            overflow: hidden;
+        }
+        .word-card::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: -30%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(200, 160, 120, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .word-card:hover {
+            border-color: #c9a87c;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+        .word-card .word-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px;
+        }
+        .word-card .word-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #eedbca;
+            letter-spacing: 0.5px;
+        }
+        .word-card .word-category {
+            font-size: 11px;
+            color: #b8a38f;
+            background: rgba(200, 160, 120, 0.1);
+            padding: 2px 12px;
+            border-radius: 30px;
+            border: 1px solid rgba(200, 160, 120, 0.1);
+        }
+        .word-card .word-meaning {
+            font-size: 15px;
+            color: #dccdbd;
+            margin: 6px 0 10px;
+            line-height: 1.5;
+            font-style: italic;
+        }
+        .word-card .word-example {
+            font-size: 13px;
+            color: #b8a38f;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 2px solid rgba(200, 160, 120, 0.2);
+        }
+        .word-card .word-origin {
+            font-size: 12px;
+            color: #8a7a6a;
+            margin-bottom: 6px;
+        }
+        .word-card .word-origin span {
+            color: #c9a87c;
+        }
+        .word-card .word-date {
+            font-size: 11px;
+            color: #6a5a4a;
+            margin-top: 4px;
+            text-align: right;
+        }
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 40px;
+            padding: 12px 0 4px;
+            color: #8a7a6a;
+            font-size: 13px;
+            border-top: 1px solid rgba(200, 160, 120, 0.08);
+            margin-top: 8px;
+        }
+        .stats-bar span strong {
+            color: #dccdbd;
+            font-weight: 400;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 16px; }
+            .logo h1 { font-size: 22px; }
+            .controls { border-radius: 24px; padding: 12px 14px; flex-direction: column; align-items: stretch; }
+            .controls .search-wrap { flex: 1 1 auto; }
+            .word-grid { grid-template-columns: 1fr; }
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 8px; }
+        ::-webkit-scrollbar-thumb { background: #5a4a3a; border-radius: 8px; }
+        ::-webkit-scrollbar-thumb:hover { background: #7a6a5a; }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8a7a6a;
+            font-size: 18px;
+            grid-column: 1 / -1;
+        }
+        .empty-state span {
+            display: block;
+            font-size: 14px;
+            margin-top: 8px;
+            color: #6a5a4a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <header class="header">
+            <div class="logo">
+                <h1>Словарь устаревших слов</h1>
+                <span>Лексика ушедших эпох</span>
+            </div>
+        </header>
+
+        <div class="controls">
+            <div class="search-wrap">
+                <input type="text" id="searchInput" placeholder="Поиск слова...">
+                <div class="autocomplete" id="autocompleteList"></div>
+            </div>
+            <div class="filters" id="filterContainer">
+                <button class="filter-btn active" data-filter="all">Все</button>
+                <button class="filter-btn" data-filter="тело">Тело</button>
+                <button class="filter-btn" data-filter="одежда">Одежда</button>
+                <button class="filter-btn" data-filter="жилище">Жилище</button>
+                <button class="filter-btn" data-filter="еда">Еда</button>
+                <button class="filter-btn" data-filter="общество">Общество</button>
+                <button class="filter-btn" data-filter="профессии">Профессии</button>
+                <button class="filter-btn" data-filter="религия">Религия</button>
+                <button class="filter-btn" data-filter="природа">Природа</button>
+                <button class="filter-btn" data-filter="абстрактное">Абстрактное</button>
+                <button class="filter-btn" data-filter="предметы">Предметы</button>
+                <button class="filter-btn" data-filter="действия">Действия</button>
+                <button class="filter-btn" data-filter="военное">Военное</button>
+                <button class="filter-btn" data-filter="торговля">Торговля</button>
+                <button class="filter-btn" data-filter="земледелие">Земледелие</button>
+                <button class="filter-btn" data-filter="морское">Морское</button>
+                <button class="filter-btn" data-filter="архитектура">Архитектура</button>
+                <button class="filter-btn" data-filter="судебное">Судебное</button>
+                <button class="filter-btn" data-filter="деньги">Деньги</button>
+                <button class="filter-btn" data-filter="животные">Животные</button>
+                <button class="filter-btn" data-filter="растения">Растения</button>
+                <button class="filter-btn" data-filter="болезни">Болезни</button>
+                <button class="filter-btn" data-filter="напитки">Напитки</button>
+            </div>
+            <select class="sort-select" id="sortSelect">
+                <option value="alphabet">По алфавиту</option>
+                <option value="date">По дате добавления</option>
+            </select>
+        </div>
+
+        <div class="word-grid" id="wordGrid"></div>
+
+        <div class="stats-bar" id="statsBar">
+            <span>Слов: <strong id="totalWords">0</strong></span>
+        </div>
+    </div>
+
+    <script>
+        // =============================================
+        // МАССИВ УСТАРЕВШИХ СЛОВ (1447 слов)
+        // =============================================
+        const DEFAULT_WORDS = [
+            // === ТЕЛО (30) ===
+            { id: 1, word: 'Выя', meaning: 'Шея', example: 'Выя лебединая', origin: 'Древнерусское', category: 'тело' },
+            { id: 2, word: 'Рамена', meaning: 'Плечи', example: 'Рамена могучие', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 3, word: 'Плесны', meaning: 'Ступни', example: 'Плесны босы', origin: 'Древнерусское', category: 'тело' },
+            { id: 4, word: 'Чресла', meaning: 'Поясница, бёдра', example: 'Препоясал чресла', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 5, word: 'Чело', meaning: 'Лоб', example: 'Чело высокое', origin: 'Общеславянское', category: 'тело' },
+            { id: 6, word: 'Очи', meaning: 'Глаза', example: 'Очи ясные', origin: 'Общеславянское', category: 'тело' },
+            { id: 7, word: 'Уста', meaning: 'Губы', example: 'Уста замолкли', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 8, word: 'Ланиты', meaning: 'Щёки', example: 'Ланиты румянцем залились', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 9, word: 'Длань', meaning: 'Ладонь', example: 'Возложил длань на плечо', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 10, word: 'Персты', meaning: 'Пальцы', example: 'Перстом указал путь', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 11, word: 'Шуйца', meaning: 'Левая рука', example: 'Шуйца держала щит', origin: 'Древнерусское', category: 'тело' },
+            { id: 12, word: 'Десница', meaning: 'Правая рука', example: 'Десница держала меч', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 13, word: 'Зеница', meaning: 'Зрачок', example: 'Беречь как зеницу ока', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 14, word: 'Вежды', meaning: 'Веки', example: 'Сомкнул вежды', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 15, word: 'Брада', meaning: 'Борода', example: 'Брада седая', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 16, word: 'Власы', meaning: 'Волосы', example: 'Власы кудрявые', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 17, word: 'Темя', meaning: 'Макушка', example: 'Темя лысое', origin: 'Общеславянское', category: 'тело' },
+            { id: 18, word: 'Рамо', meaning: 'Плечо', example: 'Взял на рамо', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 19, word: 'Чрево', meaning: 'Живот', example: 'Чрево матери', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 20, word: 'Ложесна', meaning: 'Утроба', example: 'Плод во ложеснах', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 21, word: 'Скулы', meaning: 'Скулы (устар.)', example: 'Скулы выступили', origin: 'Древнерусское', category: 'тело' },
+            { id: 22, word: 'Челюсть', meaning: 'Челюсть (устар.)', example: 'Челюсть стиснута', origin: 'Древнерусское', category: 'тело' },
+            { id: 23, word: 'Главы', meaning: 'Головы (церк.)', example: 'Главы склонились', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 24, word: 'Лик', meaning: 'Лицо (поэт.)', example: 'Лик прекрасный', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 25, word: 'Перси', meaning: 'Грудь (жен.)', example: 'Перси девичьи', origin: 'Церковнославянизм', category: 'тело' },
+            { id: 26, word: 'Волосы', meaning: 'Волосы (устар.)', example: 'Волосы русые', origin: 'Древнерусское', category: 'тело' },
+            { id: 27, word: 'Бровь', meaning: 'Бровь (устар.)', example: 'Бровь чёрная', origin: 'Древнерусское', category: 'тело' },
+            { id: 28, word: 'Ресница', meaning: 'Ресница (устар.)', example: 'Ресницы длинные', origin: 'Древнерусское', category: 'тело' },
+            { id: 29, word: 'Ноздри', meaning: 'Ноздри (устар.)', example: 'Ноздри раздувались', origin: 'Древнерусское', category: 'тело' },
+            { id: 30, word: 'Ухо', meaning: 'Ухо (устар.)', example: 'Ухо чуткое', origin: 'Древнерусское', category: 'тело' },
+            // === ОДЕЖДА (40) ===
+            { id: 31, word: 'Зипун', meaning: 'Крестьянский кафтан из грубого сукна', example: 'Зипун был с заплатами', origin: 'Тюркское', category: 'одежда' },
+            { id: 32, word: 'Кафтан', meaning: 'Длинная верхняя мужская одежда', example: 'Кафтан синего сукна', origin: 'Тюркское', category: 'одежда' },
+            { id: 33, word: 'Сарафан', meaning: 'Русская женская одежда без рукавов', example: 'Сарафан с лентами', origin: 'Иранское', category: 'одежда' },
+            { id: 34, word: 'Шушун', meaning: 'Старинная женская верхняя одежда', example: 'Шушун расшит узорами', origin: 'Древнерусское', category: 'одежда' },
+            { id: 35, word: 'Епанча', meaning: 'Широкий плащ без рукавов', example: 'Епанча накинута на плечи', origin: 'Тюркское', category: 'одежда' },
+            { id: 36, word: 'Опашень', meaning: 'Длинный летний кафтан', example: 'Опашень из парчи', origin: 'Древнерусское', category: 'одежда' },
+            { id: 37, word: 'Охабень', meaning: 'Длинная мужская одежда с откидным воротником', example: 'Охабень боярский', origin: 'Древнерусское', category: 'одежда' },
+            { id: 38, word: 'Ферязь', meaning: 'Длинная мужская одежда без воротника', example: 'Ферязь купеческая', origin: 'Тюркское', category: 'одежда' },
+            { id: 39, word: 'Терлик', meaning: 'Кафтан с узкими рукавами', example: 'Терлик стрелецкий', origin: 'Тюркское', category: 'одежда' },
+            { id: 40, word: 'Тулуп', meaning: 'Длинная шуба из овчины', example: 'Тулуп согревал в мороз', origin: 'Тюркское', category: 'одежда' },
+            { id: 41, word: 'Армяк', meaning: 'Длинный кафтан из верблюжьей шерсти', example: 'Армяк ямщика', origin: 'Тюркское', category: 'одежда' },
+            { id: 42, word: 'Поддёвка', meaning: 'Тёплая мужская одежда под кафтан', example: 'Поддёвка ватная', origin: 'Древнерусское', category: 'одежда' },
+            { id: 43, word: 'Распашница', meaning: 'Женская одежда, распахивающаяся спереди', example: 'Распашница праздничная', origin: 'Древнерусское', category: 'одежда' },
+            { id: 44, word: 'Душегрейка', meaning: 'Тёплая безрукавка', example: 'Душегрейка для тепла', origin: 'Древнерусское', category: 'одежда' },
+            { id: 45, word: 'Кика', meaning: 'Старинный женский головной убор с рожками', example: 'Кика праздничная', origin: 'Древнерусское', category: 'одежда' },
+            { id: 46, word: 'Кокошник', meaning: 'Старинный женский головной убор', example: 'Кокошник расшит жемчугом', origin: 'Древнерусское', category: 'одежда' },
+            { id: 47, word: 'Повойник', meaning: 'Головной убор замужней женщины', example: 'Повойник из холста', origin: 'Древнерусское', category: 'одежда' },
+            { id: 48, word: 'Убрус', meaning: 'Платок', example: 'Убрус белый', origin: 'Древнерусское', category: 'одежда' },
+            { id: 49, word: 'Фата', meaning: 'Прозрачное покрывало невесты', example: 'Фата скрывала лицо', origin: 'Немецкое', category: 'одежда' },
+            { id: 50, word: 'Лапти', meaning: 'Плетёная обувь из лыка', example: 'В деревне ходили в лаптях', origin: 'Древнерусское', category: 'одежда' },
+            { id: 51, word: 'Поршни', meaning: 'Кожаная обувь без каблука', example: 'Поршни удобны в лесу', origin: 'Древнерусское', category: 'одежда' },
+            { id: 52, word: 'Чоботы', meaning: 'Высокие сапоги с каблуком', example: 'Чоботы казачьи', origin: 'Тюркское', category: 'одежда' },
+            { id: 53, word: 'Шинель', meaning: 'Военное пальто', example: 'Шинель офицера', origin: 'Французское', category: 'одежда' },
+            { id: 54, word: 'Сюртук', meaning: 'Длинный сюртук', example: 'Сюртук дворянина', origin: 'Французское', category: 'одежда' },
+            { id: 55, word: 'Фрак', meaning: 'Парадная мужская одежда', example: 'Фрак для бала', origin: 'Английское', category: 'одежда' },
+            { id: 56, word: 'Камзол', meaning: 'Мужская безрукавка', example: 'Камзол под сюртук', origin: 'Французское', category: 'одежда' },
+            { id: 57, word: 'Косоворотка', meaning: 'Рубаха с косым воротом', example: 'Косоворотка красная', origin: 'Древнерусское', category: 'одежда' },
+            { id: 58, word: 'Онучи', meaning: 'Обмотки для ног под лапти', example: 'Онучи холщовые', origin: 'Древнерусское', category: 'одежда' },
+            { id: 59, word: 'Понёва', meaning: 'Женская юбка из трёх полотнищ', example: 'Понёва клетчатая', origin: 'Древнерусское', category: 'одежда' },
+            { id: 60, word: 'Платье', meaning: 'Верхняя женская одежда (устар.)', example: 'Платье парчовое', origin: 'Древнерусское', category: 'одежда' },
+            { id: 61, word: 'Сапоги', meaning: 'Высокая обувь (устар.)', example: 'Сапоги со скрипом', origin: 'Древнерусское', category: 'одежда' },
+            { id: 62, word: 'Валенки', meaning: 'Зимние войлочные сапоги', example: 'Валенки в деревне', origin: 'Древнерусское', category: 'одежда' },
+            { id: 63, word: 'Чуни', meaning: 'Верёвочные лапти', example: 'Чуни на ногах', origin: 'Древнерусское', category: 'одежда' },
+            { id: 64, word: 'Онучи (повтор)', meaning: 'Обмотки для ног', example: 'Онучи холщовые', origin: 'Древнерусское', category: 'одежда' },
+            { id: 65, word: 'Порты', meaning: 'Штаны (устар.)', example: 'Порты полотняные', origin: 'Древнерусское', category: 'одежда' },
+            { id: 66, word: 'Штаны', meaning: 'Штаны (устар.)', example: 'Штаны суконные', origin: 'Древнерусское', category: 'одежда' },
+            { id: 67, word: 'Кушак', meaning: 'Пояс', example: 'Кушак подхватывал рубаху', origin: 'Древнерусское', category: 'одежда' },
+            { id: 68, word: 'Пояс', meaning: 'Пояс (устар.)', example: 'Пояс кожаный', origin: 'Древнерусское', category: 'одежда' },
+            { id: 69, word: 'Гайтан', meaning: 'Плетёный шнур для креста', example: 'Гайтан на шее', origin: 'Древнерусское', category: 'одежда' },
+            { id: 70, word: 'Мочесник', meaning: 'Пояс для мошны', example: 'Мочесник с деньгами', origin: 'Древнерусское', category: 'одежда' },
+            // === ЖИЛИЩЕ (35) ===
+            { id: 71, word: 'Терем', meaning: 'Верхний ярус дома, светёлка', example: 'Терем высокий', origin: 'Древнерусское', category: 'жилище' },
+            { id: 72, word: 'Хоромы', meaning: 'Большой богатый дом', example: 'Хоромы княжеские', origin: 'Древнерусское', category: 'жилище' },
+            { id: 73, word: 'Горница', meaning: 'Парадная комната', example: 'Горница с иконами', origin: 'Древнерусское', category: 'жилище' },
+            { id: 74, word: 'Светлица', meaning: 'Светлая комната, терем', example: 'Светлица для рукоделия', origin: 'Древнерусское', category: 'жилище' },
+            { id: 75, word: 'Ложница', meaning: 'Спальня', example: 'Ложница царицы', origin: 'Древнерусское', category: 'жилище' },
+            { id: 76, word: 'Клеть', meaning: 'Кладовая', example: 'Клеть с припасами', origin: 'Древнерусское', category: 'жилище' },
+            { id: 77, word: 'Повалуша', meaning: 'Баня, мыльня', example: 'Повалуша топилась по-чёрному', origin: 'Древнерусское', category: 'жилище' },
+            { id: 78, word: 'Мыльня', meaning: 'Баня', example: 'Мыльня на берегу', origin: 'Древнерусское', category: 'жилище' },
+            { id: 79, word: 'Опочивальня', meaning: 'Спальня', example: 'Опочивальня царевны', origin: 'Древнерусское', category: 'жилище' },
+            { id: 80, word: 'Трапезная', meaning: 'Столовая', example: 'Трапезная в монастыре', origin: 'Церковнославянизм', category: 'жилище' },
+            { id: 81, word: 'Гридница', meaning: 'Приёмный зал для дружины', example: 'Гридница князя', origin: 'Древнерусское', category: 'жилище' },
+            { id: 82, word: 'Сенник', meaning: 'Сарай для сена', example: 'Сенник полон', origin: 'Древнерусское', category: 'жилище' },
+            { id: 83, word: 'Овин', meaning: 'Сушилка для зерна', example: 'Овин топили', origin: 'Древнерусское', category: 'жилище' },
+            { id: 84, word: 'Гумно', meaning: 'Ток для молотьбы', example: 'Гумно с обмолоченным зерном', origin: 'Древнерусское', category: 'жилище' },
+            { id: 85, word: 'Рига', meaning: 'Овин, сушильня', example: 'Рига с соломой', origin: 'Древнерусское', category: 'жилище' },
+            { id: 86, word: 'Кузница', meaning: 'Мастерская кузнеца', example: 'Кузница в деревне', origin: 'Древнерусское', category: 'жилище' },
+            { id: 87, word: 'Плотницкая', meaning: 'Мастерская плотника', example: 'Плотницкая с инструментом', origin: 'Древнерусское', category: 'жилище' },
+            { id: 88, word: 'Столярная', meaning: 'Мастерская столяра', example: 'Столярная с верстаком', origin: 'Древнерусское', category: 'жилище' },
+            { id: 89, word: 'Сапожная', meaning: 'Мастерская сапожника', example: 'Сапожная с обувью', origin: 'Древнерусское', category: 'жилище' },
+            { id: 90, word: 'Портняжная', meaning: 'Мастерская портного', example: 'Портняжная с рулонами', origin: 'Древнерусское', category: 'жилище' },
+            { id: 91, word: 'Бондарная', meaning: 'Мастерская бондаря', example: 'Бондарная с бочками', origin: 'Древнерусское', category: 'жилище' },
+            { id: 92, word: 'Изба', meaning: 'Деревянный дом', example: 'Изба рубленая', origin: 'Древнерусское', category: 'жилище' },
+            { id: 93, word: 'Хата', meaning: 'Дом (украинский)', example: 'Хата белая', origin: 'Древнерусское', category: 'жилище' },
+            { id: 94, word: 'Курень', meaning: 'Временное жильё', example: 'Курень в степи', origin: 'Древнерусское', category: 'жилище' },
+            { id: 95, word: 'Шалаш', meaning: 'Лёгкое укрытие', example: 'Шалаш из веток', origin: 'Древнерусское', category: 'жилище' },
+            { id: 96, word: 'Землянка', meaning: 'Жилище, вырытое в земле', example: 'Землянка в лесу', origin: 'Древнерусское', category: 'жилище' },
+            { id: 97, word: 'Баня', meaning: 'Парная (устар.)', example: 'Баня по-чёрному', origin: 'Древнерусское', category: 'жилище' },
+            { id: 98, word: 'Хлев', meaning: 'Помещение для скота', example: 'Хлев с коровами', origin: 'Древнерусское', category: 'жилище' },
+            { id: 99, word: 'Конюшня', meaning: 'Помещение для лошадей', example: 'Конюшня чистая', origin: 'Древнерусское', category: 'жилище' },
+            { id: 100, word: 'Сарай', meaning: 'Хозяйственное помещение', example: 'Сарай для дров', origin: 'Древнерусское', category: 'жилище' },
+            { id: 101, word: 'Амбар', meaning: 'Зернохранилище', example: 'Амбар полон', origin: 'Древнерусское', category: 'жилище' },
+            { id: 102, word: 'Погреб', meaning: 'Холодное помещение', example: 'Погреб с продуктами', origin: 'Древнерусское', category: 'жилище' },
+            { id: 103, word: 'Чулан', meaning: 'Кладовая', example: 'Чулан с вещами', origin: 'Древнерусское', category: 'жилище' },
+            { id: 104, word: 'Сени', meaning: 'Прихожая', example: 'Сени с сенями', origin: 'Древнерусское', category: 'жилище' },
+            { id: 105, word: 'Крыльцо', meaning: 'Входная площадка', example: 'Крыльцо резное', origin: 'Древнерусское', category: 'жилище' },
+            // === ЕДА (30) ===
+            { id: 106, word: 'Брага', meaning: 'Домашнее пиво', example: 'Брага на меду', origin: 'Древнерусское', category: 'еда' },
+            { id: 107, word: 'Ендова', meaning: 'Широкая посудина для пива', example: 'Наливали брагу в ендову', origin: 'Тюркское', category: 'еда' },
+            { id: 108, word: 'Братина', meaning: 'Старинный сосуд для питья', example: 'Братина с мёдом', origin: 'Древнерусское', category: 'еда' },
+            { id: 109, word: 'Патока', meaning: 'Сладкий сироп', example: 'Патока на блины', origin: 'Древнерусское', category: 'еда' },
+            { id: 110, word: 'Квас', meaning: 'Прохладительный напиток (домашний)', example: 'Квас хлебный', origin: 'Древнерусское', category: 'еда' },
+            { id: 111, word: 'Сыта', meaning: 'Напиток из мёда с водой', example: 'Сыта с пряностями', origin: 'Древнерусское', category: 'еда' },
+            { id: 112, word: 'Кутья', meaning: 'Каша из пшеницы с мёдом и изюмом (поминальная)', example: 'Кутья на поминках', origin: 'Древнерусское', category: 'еда' },
+            { id: 113, word: 'Взвар', meaning: 'Отвар из сухофруктов, компот', example: 'Взвар на Рождество', origin: 'Древнерусское', category: 'еда' },
+            { id: 114, word: 'Буйволица', meaning: 'Буйволица (молоко, мясо)', example: 'Буйволица давала молоко', origin: 'Тюркское', category: 'еда' },
+            { id: 115, word: 'Солод', meaning: 'Пророщенное зерно для пива', example: 'Солод для браги', origin: 'Древнерусское', category: 'еда' },
+            { id: 116, word: 'Квашня', meaning: 'Кадка для теста', example: 'Квашня стояла в печи', origin: 'Древнерусское', category: 'еда' },
+            { id: 117, word: 'Уха', meaning: 'Рыбный суп', example: 'Уха из осетра', origin: 'Древнерусское', category: 'еда' },
+            { id: 118, word: 'Щи', meaning: 'Капустный суп', example: 'Щи с мясом', origin: 'Древнерусское', category: 'еда' },
+            { id: 119, word: 'Каша', meaning: 'Блюдо из крупы', example: 'Каша гречневая', origin: 'Древнерусское', category: 'еда' },
+            { id: 120, word: 'Толокно', meaning: 'Мука из овса', example: 'Толокно на воде', origin: 'Древнерусское', category: 'еда' },
+            { id: 121, word: 'Кисель', meaning: 'Кисло-сладкий напиток', example: 'Кисель овсяный', origin: 'Древнерусское', category: 'еда' },
+            { id: 122, word: 'Мед', meaning: 'Напиток из мёда', example: 'Мед хмельной', origin: 'Древнерусское', category: 'еда' },
+            { id: 123, word: 'Пиво', meaning: 'Пенный напиток', example: 'Пиво ячменное', origin: 'Древнерусское', category: 'еда' },
+            { id: 124, word: 'Ол', meaning: 'Пиво (древнее)', example: 'Ол пили на пиру', origin: 'Древнерусское', category: 'еда' },
+            { id: 125, word: 'Вина', meaning: 'Виноградное вино', example: 'Вина заморские', origin: 'Греческое', category: 'еда' },
+            { id: 126, word: 'Сбитень', meaning: 'Горячий напиток из мёда и пряностей', example: 'Сбитень зимой', origin: 'Древнерусское', category: 'еда' },
+            { id: 127, word: 'Квас (повтор)', meaning: 'Напиток из хлеба', example: 'Квас с мятой', origin: 'Древнерусское', category: 'еда' },
+            { id: 128, word: 'Рыба', meaning: 'Рыба (устар.)', example: 'Рыба свежая', origin: 'Древнерусское', category: 'еда' },
+            { id: 129, word: 'Мясо', meaning: 'Мясо (устар.)', example: 'Мясо говяжье', origin: 'Древнерусское', category: 'еда' },
+            { id: 130, word: 'Хлеб', meaning: 'Хлеб (устар.)', example: 'Хлеб свежий', origin: 'Древнерусское', category: 'еда' },
+            { id: 131, word: 'Калач', meaning: 'Пшеничный хлеб', example: 'Калач на столе', origin: 'Древнерусское', category: 'еда' },
+            { id: 132, word: 'Пирог', meaning: 'Пирог (устар.)', example: 'Пирог с капустой', origin: 'Древнерусское', category: 'еда' },
+            { id: 133, word: 'Блины', meaning: 'Блины (устар.)', example: 'Блины на масленицу', origin: 'Древнерусское', category: 'еда' },
+            { id: 134, word: 'Оладьи', meaning: 'Оладьи (устар.)', example: 'Оладьи с мёдом', origin: 'Древнерусское', category: 'еда' },
+            { id: 135, word: 'Сыр', meaning: 'Сыр (устар.)', example: 'Сыр домашний', origin: 'Древнерусское', category: 'еда' },
+            // === ОБЩЕСТВО (40) ===
+            { id: 136, word: 'Боярин', meaning: 'Высший слой феодальной знати', example: 'Боярин сидел в Думе', origin: 'Древнерусское', category: 'общество' },
+            { id: 137, word: 'Дворянин', meaning: 'Представитель привилегированного сословия', example: 'Дворянин служил государю', origin: 'Древнерусское', category: 'общество' },
+            { id: 138, word: 'Купец', meaning: 'Торговец', example: 'Купец привёз товары', origin: 'Тюркское', category: 'общество' },
+            { id: 139, word: 'Холоп', meaning: 'Зависимый крестьянин, раб', example: 'Холоп работал на барина', origin: 'Древнерусское', category: 'общество' },
+            { id: 140, word: 'Челядь', meaning: 'Дворовая прислуга', example: 'Челядь хлопотала по хозяйству', origin: 'Общеславянское', category: 'общество' },
+            { id: 141, word: 'Раб', meaning: 'Невольник', example: 'Раб без прав', origin: 'Церковнославянизм', category: 'общество' },
+            { id: 142, word: 'Вече', meaning: 'Народное собрание в древней Руси', example: 'Вече решало важные вопросы', origin: 'Древнерусское', category: 'общество' },
+            { id: 143, word: 'Воевода', meaning: 'Военачальник, правитель города', example: 'Воевода командовал войском', origin: 'Древнерусское', category: 'общество' },
+            { id: 144, word: 'Посадник', meaning: 'Выборный глава города (в Новгороде)', example: 'Посадник созывал вече', origin: 'Древнерусское', category: 'общество' },
+            { id: 145, word: 'Тысяцкий', meaning: 'Предводитель городского ополчения', example: 'Тысяцкий вёл народ', origin: 'Древнерусское', category: 'общество' },
+            { id: 146, word: 'Сотник', meaning: 'Командир сотни в войске', example: 'Сотник вывел отряд', origin: 'Древнерусское', category: 'общество' },
+            { id: 147, word: 'Десятник', meaning: 'Командир десятка воинов', example: 'Десятник вёл бой', origin: 'Древнерусское', category: 'общество' },
+            { id: 148, word: 'Стрелец', meaning: 'Воин из стрелецкого войска', example: 'Стрельцы несли караул', origin: 'Древнерусское', category: 'общество' },
+            { id: 149, word: 'Пушкарь', meaning: 'Артиллерист', example: 'Пушкарь заряжал орудие', origin: 'Древнерусское', category: 'общество' },
+            { id: 150, word: 'Опричник', meaning: 'Член опричного войска Ивана Грозного', example: 'Опричник наводил страх', origin: 'Древнерусское', category: 'общество' },
+            { id: 151, word: 'Дружинник', meaning: 'Воин, член княжеской дружины', example: 'Дружинник охранял князя', origin: 'Древнерусское', category: 'общество' },
+            { id: 152, word: 'Городовой', meaning: 'Полицейский чин в старину', example: 'Городовой стоял на посту', origin: 'Древнерусское', category: 'общество' },
+            { id: 153, word: 'Атаман', meaning: 'Предводитель казачьего войска', example: 'Атаман повёл казаков', origin: 'Тюркское', category: 'общество' },
+            { id: 154, word: 'Есаул', meaning: 'Помощник атамана', example: 'Есаул передал приказ', origin: 'Тюркское', category: 'общество' },
+            { id: 155, word: 'Бурмистр', meaning: 'Городской голова', example: 'Бурмистр созывал совет', origin: 'Немецкое', category: 'общество' },
+            { id: 156, word: 'Ратуша', meaning: 'Городской совет', example: 'Ратуша заседала', origin: 'Немецкое', category: 'общество' },
+            { id: 157, word: 'Магистрат', meaning: 'Городское управление', example: 'Магистрат решал вопросы', origin: 'Латинское', category: 'общество' },
+            { id: 158, word: 'Губернатор', meaning: 'Начальник губернии', example: 'Губернатор правил областью', origin: 'Латинское', category: 'общество' },
+            { id: 159, word: 'Староста', meaning: 'Выборный глава', example: 'Староста собирал подати', origin: 'Древнерусское', category: 'общество' },
+            { id: 160, word: 'Судья', meaning: 'Лицо, отправляющее правосудие', example: 'Судья вынес приговор', origin: 'Древнерусское', category: 'общество' },
+            { id: 161, word: 'Палач', meaning: 'Исполнитель казней', example: 'Палач ждал приговора', origin: 'Древнерусское', category: 'общество' },
+            { id: 162, word: 'Кат', meaning: 'Палач (древн.)', example: 'Кат приступил к казни', origin: 'Древнерусское', category: 'общество' },
+            { id: 163, word: 'Разбойник', meaning: 'Грабитель', example: 'Разбойник напал на обоз', origin: 'Древнерусское', category: 'общество' },
+            { id: 164, word: 'Вор', meaning: 'Похититель (устар.)', example: 'Вор украл коня', origin: 'Древнерусское', category: 'общество' },
+            { id: 165, word: 'Мошенник', meaning: 'Обманщик', example: 'Мошенник обманул', origin: 'Древнерусское', category: 'общество' },
+            { id: 166, word: 'Ябедник', meaning: 'Доносчик, клеветник', example: 'Ябедник настучал', origin: 'Древнерусское', category: 'общество' },
+            { id: 167, word: 'Клеветник', meaning: 'Лжец', example: 'Клеветник оговорил', origin: 'Древнерусское', category: 'общество' },
+            { id: 168, word: 'Хулитель', meaning: 'Злослов', example: 'Хулитель поносил', origin: 'Древнерусское', category: 'общество' },
+            { id: 169, word: 'Грабитель', meaning: 'Разбойник', example: 'Грабитель напал', origin: 'Древнерусское', category: 'общество' },
+            { id: 170, word: 'Убийца', meaning: 'Убийца (устар.)', example: 'Убийца скрылся', origin: 'Древнерусское', category: 'общество' },
+            { id: 171, word: 'Смерд', meaning: 'Крестьянин в древней Руси', example: 'Смерд пахал землю', origin: 'Древнерусское', category: 'общество' },
+            { id: 172, word: 'Закуп', meaning: 'Земледелец, попавший в зависимость', example: 'Закуп работал на боярина', origin: 'Древнерусское', category: 'общество' },
+            { id: 173, word: 'Рядович', meaning: 'Крестьянин-общинник', example: 'Рядович платил дань', origin: 'Древнерусское', category: 'общество' },
+            { id: 174, word: 'Изгой', meaning: 'Человек, потерявший свой социальный статус', example: 'Изгой скитался', origin: 'Древнерусское', category: 'общество' },
+            { id: 175, word: 'Скоморох', meaning: 'Бродячий актёр, музыкант', example: 'Скоморох веселил народ', origin: 'Древнерусское', category: 'общество' },
+            // === ПРОФЕССИИ (50) ===
+            { id: 176, word: 'Приказчик', meaning: 'Управляющий делами торгового предприятия', example: 'Приказчик вёл учёт', origin: 'Древнерусское', category: 'профессии' },
+            { id: 177, word: 'Стряпчий', meaning: 'Поверенный, адвокат (в старину)', example: 'Стряпчий защищал в суде', origin: 'Древнерусское', category: 'профессии' },
+            { id: 178, word: 'Писарь', meaning: 'Писец, переписчик документов', example: 'Писарь старательно выводил буквы', origin: 'Древнерусское', category: 'профессии' },
+            { id: 179, word: 'Дьяк', meaning: 'Высокопоставленный чиновник, секретарь приказа', example: 'Дьяк ведал документами', origin: 'Древнерусское', category: 'профессии' },
+            { id: 180, word: 'Подьячий', meaning: 'Младший канцелярский служащий', example: 'Подьячий переписывал бумаги', origin: 'Древнерусское', category: 'профессии' },
+            { id: 181, word: 'Целовальник', meaning: 'Лицо, присягавшее на верность (целовавшее крест)', example: 'Целовальник дал клятву', origin: 'Древнерусское', category: 'профессии' },
+            { id: 182, word: 'Голова', meaning: 'Начальник, выборный руководитель (в старину)', example: 'Голова города управлял делами', origin: 'Древнерусское', category: 'профессии' },
+            { id: 183, word: 'Окольничий', meaning: 'Высокий придворный чин, помощник боярина', example: 'Окольничий входил в Думу', origin: 'Древнерусское', category: 'профессии' },
+            { id: 184, word: 'Стольник', meaning: 'Младший придворный чин', example: 'Стольник прислуживал за столом', origin: 'Древнерусское', category: 'профессии' },
+            { id: 185, word: 'Сокольничий', meaning: 'Ведающий соколиной охотой при дворе', example: 'Сокольничий выезжал с князем', origin: 'Древнерусское', category: 'профессии' },
+            { id: 186, word: 'Конюшенный', meaning: 'Заведующий конюшнями', example: 'Конюшенный чистил лошадей', origin: 'Древнерусское', category: 'профессии' },
+            { id: 187, word: 'Ловчий', meaning: 'Ведающий охотой, егерь', example: 'Ловчий организовывал охоту', origin: 'Древнерусское', category: 'профессии' },
+            { id: 188, word: 'Оружейничий', meaning: 'Ответственный за оружие', example: 'Оружейничий хранил мечи', origin: 'Древнерусское', category: 'профессии' },
+            { id: 189, word: 'Постельничий', meaning: 'Слуга, ведающий постелью государя', example: 'Постельничий стелил ложе', origin: 'Древнерусское', category: 'профессии' },
+            { id: 190, word: 'Казначей', meaning: 'Хранитель казны', example: 'Казначей вёл счёт деньгам', origin: 'Древнерусское', category: 'профессии' },
+            { id: 191, word: 'Печатник', meaning: 'Хранитель печати', example: 'Печатник ставил печать на грамоты', origin: 'Древнерусское', category: 'профессии' },
+            { id: 192, word: 'Толмач', meaning: 'Переводчик', example: 'Толмач вёл переговоры', origin: 'Тюркское', category: 'профессии' },
+            { id: 193, word: 'Лекарь', meaning: 'Врач (в старину)', example: 'Лекарь лечил больных', origin: 'Древнерусское', category: 'профессии' },
+            { id: 194, word: 'Цирюльник', meaning: 'Парикмахер, а также лекарь-кровопускатель', example: 'Цирюльник брил бороду', origin: 'Немецкое', category: 'профессии' },
+            { id: 195, word: 'Аптекарь', meaning: 'Фармацевт, владелец аптеки', example: 'Аптекарь отпускал лекарства', origin: 'Греческое', category: 'профессии' },
+            { id: 196, word: 'Знахарь', meaning: 'Народный целитель, колдун', example: 'Знахарь шептал заговоры', origin: 'Древнерусское', category: 'профессии' },
+            { id: 197, word: 'Повитуха', meaning: 'Женщина, принимающая роды', example: 'Повитуха помогала родильнице', origin: 'Древнерусское', category: 'профессии' },
+            { id: 198, word: 'Кормилица', meaning: 'Женщина, вскармливающая грудью чужого ребенка', example: 'Кормилица нянчила барина', origin: 'Древнерусское', category: 'профессии' },
+            { id: 199, word: 'Мамка', meaning: 'Няня-кормилица', example: 'Мамка убаюкивала младенца', origin: 'Древнерусское', category: 'профессии' },
+            { id: 200, word: 'Дядька', meaning: 'Слуга-воспитатель при мальчике', example: 'Дядька учил молодого князя', origin: 'Древнерусское', category: 'профессии' },
+            { id: 201, word: 'Грамотей', meaning: 'Грамотный человек', example: 'Грамотей читал книги', origin: 'Древнерусское', category: 'профессии' },
+            { id: 202, word: 'Книжник', meaning: 'Человек, любящий книги, начитанный', example: 'Книжник знал много цитат', origin: 'Древнерусское', category: 'профессии' },
+            { id: 203, word: 'Летописец', meaning: 'Человек, пишущий летопись', example: 'Летописец описывал события', origin: 'Древнерусское', category: 'профессии' },
+            { id: 204, word: 'Переписчик', meaning: 'Человек, переписывающий книги от руки', example: 'Переписчик старательно выводил буквы', origin: 'Древнерусское', category: 'профессии' },
+            { id: 205, word: 'Дьячок', meaning: 'Младший церковнослужитель, псаломщик', example: 'Дьячок читал часы', origin: 'Древнерусское', category: 'профессии' },
+            { id: 206, word: 'Пономарь', meaning: 'Церковный сторож, звонарь', example: 'Пономарь звонил в колокола', origin: 'Греческое', category: 'профессии' },
+            { id: 207, word: 'Звонарь', meaning: 'Человек, звонящий в церковные колокола', example: 'Звонарь ударил в колокол', origin: 'Древнерусское', category: 'профессии' },
+            { id: 208, word: 'Иконописец', meaning: 'Художник, пишущий иконы', example: 'Иконописец работал над образом', origin: 'Древнерусское', category: 'профессии' },
+            { id: 209, word: 'Зодчий', meaning: 'Архитектор, строитель', example: 'Зодчий возвёл собор', origin: 'Древнерусское', category: 'профессии' },
+            { id: 210, word: 'Бондарь', meaning: 'Мастер по изготовлению бочек', example: 'Бондарь собрал бочку', origin: 'Древнерусское', category: 'профессии' },
+            { id: 211, word: 'Седельник', meaning: 'Мастер, делающий сёдла и упряжь', example: 'Седельник чинил седло', origin: 'Древнерусское', category: 'профессии' },
+            { id: 212, word: 'Каретник', meaning: 'Мастер, изготовляющий кареты', example: 'Каретник строил карету', origin: 'Древнерусское', category: 'профессии' },
+            { id: 213, word: 'Извозчик', meaning: 'Возница, занимающийся извозом', example: 'Извозчик вёз седоков', origin: 'Древнерусское', category: 'профессии' },
+            { id: 214, word: 'Ломовой', meaning: 'Извозчик, перевозящий тяжести', example: 'Ломовой тащил груз', origin: 'Древнерусское', category: 'профессии' },
+            { id: 215, word: 'Конюх', meaning: 'Слуга, ухаживающий за лошадьми', example: 'Конюх чистил лошадей', origin: 'Древнерусское', category: 'профессии' },
+            { id: 216, word: 'Зверолов', meaning: 'Ловец зверей', example: 'Зверолов ставил капканы', origin: 'Древнерусское', category: 'профессии' },
+            { id: 217, word: 'Бортник', meaning: 'Пчеловод, занимающийся бортничеством', example: 'Бортник собирал мёд в лесу', origin: 'Древнерусское', category: 'профессии' },
+            { id: 218, word: 'Хлебопек', meaning: 'Тот, кто печёт хлеб', example: 'Хлебопек замешивал тесто', origin: 'Древнерусское', category: 'профессии' },
+            { id: 219, word: 'Кухарь', meaning: 'Повар (устаревшее)', example: 'Кухарь готовил обед', origin: 'Древнерусское', category: 'профессии' },
+            { id: 220, word: 'Кузнец', meaning: 'Мастер по ковке', example: 'Кузнец выковал подкову', origin: 'Древнерусское', category: 'профессии' },
+            { id: 221, word: 'Плотник', meaning: 'Деревообработчик', example: 'Плотник срубил избу', origin: 'Древнерусское', category: 'профессии' },
+            { id: 222, word: 'Столяр', meaning: 'Мебельщик', example: 'Столяр сделал стол', origin: 'Древнерусское', category: 'профессии' },
+            { id: 223, word: 'Печник', meaning: 'Мастер по печам', example: 'Печник сложил печь', origin: 'Древнерусское', category: 'профессии' },
+            { id: 224, word: 'Гончар', meaning: 'Мастер по глине', example: 'Гончар сделал горшок', origin: 'Древнерусское', category: 'профессии' },
+            { id: 225, word: 'Кожемяка', meaning: 'Мастер по выделке кож', example: 'Кожемяка выделывал кожу', origin: 'Древнерусское', category: 'профессии' },
+            // === РЕЛИГИЯ (30) ===
+            { id: 226, word: 'Игумен', meaning: 'Настоятель монастыря', example: 'Игумен благословил', origin: 'Греческое', category: 'религия' },
+            { id: 227, word: 'Архимандрит', meaning: 'Высший сан монашества', example: 'Архимандрит в золотом облачении', origin: 'Греческое', category: 'религия' },
+            { id: 228, word: 'Митрополит', meaning: 'Глава митрополии', example: 'Митрополит служил литургию', origin: 'Греческое', category: 'религия' },
+            { id: 229, word: 'Патриарх', meaning: 'Высший иерарх церкви', example: 'Патриарх возглавлял собор', origin: 'Греческое', category: 'религия' },
+            { id: 230, word: 'Поп', meaning: 'Священник (разговорное)', example: 'Поп служил молебен', origin: 'Древнерусское', category: 'религия' },
+            { id: 231, word: 'Дьякон', meaning: 'Первая степень священства', example: 'Дьякон возглашал ектенью', origin: 'Греческое', category: 'религия' },
+            { id: 232, word: 'Схимник', meaning: 'Монах, принявший великую схиму', example: 'Схимник в затворе', origin: 'Греческое', category: 'религия' },
+            { id: 233, word: 'Пустынник', meaning: 'Отшельник, живущий в пустыне', example: 'Пустынник молился', origin: 'Древнерусское', category: 'религия' },
+            { id: 234, word: 'Затворник', meaning: 'Отшельник, затворившийся в келье', example: 'Затворник ушёл от мира', origin: 'Древнерусское', category: 'религия' },
+            { id: 235, word: 'Инок', meaning: 'Монах', example: 'Инок в келье', origin: 'Греческое', category: 'религия' },
+            { id: 236, word: 'Келейник', meaning: 'Слуга при монахе', example: 'Келейник прислуживал', origin: 'Древнерусское', category: 'религия' },
+            { id: 237, word: 'Послушник', meaning: 'Монах-новичок', example: 'Послушник готовился к постригу', origin: 'Древнерусское', category: 'религия' },
+            { id: 238, word: 'Постриг', meaning: 'Обряд посвящения в монахи', example: 'Постриг совершали в церкви', origin: 'Древнерусское', category: 'религия' },
+            { id: 239, word: 'Схима', meaning: 'Великая монашеская степень', example: 'Схима означает высшую степень', origin: 'Греческое', category: 'религия' },
+            { id: 240, word: 'Клобук', meaning: 'Монашеский головной убор', example: 'Клобук чёрный', origin: 'Тюркское', category: 'религия' },
+            { id: 241, word: 'Мантия', meaning: 'Накидка монаха', example: 'Мантия ниспадала до пола', origin: 'Латинское', category: 'религия' },
+            { id: 242, word: 'Псалом', meaning: 'Церковное песнопение', example: 'Псалом читали на всенощной', origin: 'Греческое', category: 'религия' },
+            { id: 243, word: 'Ектенья', meaning: 'Молитвенное прошение', example: 'Ектенью возглашал диакон', origin: 'Греческое', category: 'религия' },
+            { id: 244, word: 'Литургия', meaning: 'Главное церковное богослужение', example: 'Литургия в воскресенье', origin: 'Греческое', category: 'религия' },
+            { id: 245, word: 'Вечерня', meaning: 'Вечерняя служба', example: 'Вечерня начиналась с закатом', origin: 'Древнерусское', category: 'религия' },
+            { id: 246, word: 'Утреня', meaning: 'Утренняя служба', example: 'Утреня на рассвете', origin: 'Древнерусское', category: 'религия' },
+            { id: 247, word: 'Всенощная', meaning: 'Ночная служба', example: 'Всенощная длилась всю ночь', origin: 'Древнерусское', category: 'религия' },
+            { id: 248, word: 'Часы', meaning: 'Церковная служба', example: 'Часы читали перед литургией', origin: 'Древнерусское', category: 'религия' },
+            { id: 249, word: 'Тропарь', meaning: 'Краткое песнопение', example: 'Тропарь празднику', origin: 'Греческое', category: 'религия' },
+            { id: 250, word: 'Кондак', meaning: 'Песнопение в честь праздника', example: 'Кондак Рождества', origin: 'Греческое', category: 'религия' },
+            { id: 251, word: 'Икос', meaning: 'Строфа в службе', example: 'Икос на утрене', origin: 'Греческое', category: 'религия' },
+            { id: 252, word: 'Акафист', meaning: 'Хвалебное пение', example: 'Акафист Богородице', origin: 'Греческое', category: 'религия' },
+            { id: 253, word: 'Канон', meaning: 'Церковное правило', example: 'Канон Андрея Критского', origin: 'Греческое', category: 'религия' },
+            { id: 254, word: 'Евангелие', meaning: 'Благая весть', example: 'Евангелие читали', origin: 'Греческое', category: 'религия' },
+            { id: 255, word: 'Апостол', meaning: 'Послание апостолов', example: 'Апостол читали на литургии', origin: 'Греческое', category: 'религия' },
+            // === ПРИРОДА (40) ===
+            { id: 256, word: 'Жито', meaning: 'Хлеб, зерно, рожь', example: 'Жито уродилось', origin: 'Общеславянское', category: 'природа' },
+            { id: 257, word: 'Зазимье', meaning: 'Начало зимы, первый снег', example: 'Зазимье пришло внезапно', origin: 'Древнерусское', category: 'природа' },
+            { id: 258, word: 'Ильм', meaning: 'Дерево вяз, ильм', example: 'Ильм раскидистый', origin: 'Древнерусское', category: 'природа' },
+            { id: 259, word: 'Княженика', meaning: 'Плод княженики (кустарник)', example: 'Княженика в лесу', origin: 'Древнерусское', category: 'природа' },
+            { id: 260, word: 'Костяника', meaning: 'Ягода костяники', example: 'Костяника в траве', origin: 'Древнерусское', category: 'природа' },
+            { id: 261, word: 'Яруга', meaning: 'Овраг, балка', example: 'Яруга заросла кустами', origin: 'Древнерусское', category: 'природа' },
+            { id: 262, word: 'Берег', meaning: 'Берег (поэт.)', example: 'Берег крутой', origin: 'Древнерусское', category: 'природа' },
+            { id: 263, word: 'Древо', meaning: 'Дерево (церк.)', example: 'Древо жизни', origin: 'Церковнославянизм', category: 'природа' },
+            { id: 264, word: 'Лес', meaning: 'Лес (устар.)', example: 'Лес дремучий', origin: 'Древнерусское', category: 'природа' },
+            { id: 265, word: 'Дуброва', meaning: 'Дубрава, лиственный лес', example: 'Дуброва шумела', origin: 'Древнерусское', category: 'природа' },
+            { id: 266, word: 'Роща', meaning: 'Небольшой лес', example: 'Роща берёзовая', origin: 'Древнерусское', category: 'природа' },
+            { id: 267, word: 'Бор', meaning: 'Сосновый лес', example: 'Бор сосновый', origin: 'Древнерусское', category: 'природа' },
+            { id: 268, word: 'Степь', meaning: 'Безлесная равнина', example: 'Степь бескрайняя', origin: 'Древнерусское', category: 'природа' },
+            { id: 269, word: 'Поле', meaning: 'Пашня, место битвы', example: 'Поле широкое', origin: 'Древнерусское', category: 'природа' },
+            { id: 270, word: 'Река', meaning: 'Река (поэт.)', example: 'Река быстрая', origin: 'Древнерусское', category: 'природа' },
+            { id: 271, word: 'Озеро', meaning: 'Водоём', example: 'Озеро гладкое', origin: 'Древнерусское', category: 'природа' },
+            { id: 272, word: 'Гора', meaning: 'Высокий холм', example: 'Гора крутая', origin: 'Древнерусское', category: 'природа' },
+            { id: 273, word: 'Холм', meaning: 'Небольшая возвышенность', example: 'Холм покрыт травой', origin: 'Древнерусское', category: 'природа' },
+            { id: 274, word: 'Дол', meaning: 'Лощина, долина', example: 'Дол зеленый', origin: 'Древнерусское', category: 'природа' },
+            { id: 275, word: 'Луг', meaning: 'Заливной луг', example: 'Луг цветущий', origin: 'Древнерусское', category: 'природа' },
+            { id: 276, word: 'Нива', meaning: 'Поле, пашня', example: 'Нива золотая', origin: 'Древнерусское', category: 'природа' },
+            { id: 277, word: 'Ветвь', meaning: 'Ветка (поэт.)', example: 'Ветвь кудрявая', origin: 'Древнерусское', category: 'природа' },
+            { id: 278, word: 'Корень', meaning: 'Корень (устар.)', example: 'Корень дуба', origin: 'Древнерусское', category: 'природа' },
+            { id: 279, word: 'Лист', meaning: 'Лист (поэт.)', example: 'Лист золотой', origin: 'Древнерусское', category: 'природа' },
+            { id: 280, word: 'Цвет', meaning: 'Цветок (поэт.)', example: 'Цвет алый', origin: 'Древнерусское', category: 'природа' },
+            { id: 281, word: 'Трава', meaning: 'Трава (устар.)', example: 'Трава зелёная', origin: 'Древнерусское', category: 'природа' },
+            { id: 282, word: 'Куст', meaning: 'Куст (устар.)', example: 'Куст цветущий', origin: 'Древнерусское', category: 'природа' },
+            { id: 283, word: 'Сосна', meaning: 'Сосна (устар.)', example: 'Сосна высокая', origin: 'Древнерусское', category: 'природа' },
+            { id: 284, word: 'Ель', meaning: 'Ель (устар.)', example: 'Ель зелёная', origin: 'Древнерусское', category: 'природа' },
+            { id: 285, word: 'Дуб', meaning: 'Дуб (устар.)', example: 'Дуб могучий', origin: 'Древнерусское', category: 'природа' },
+            { id: 286, word: 'Берёза', meaning: 'Берёза (устар.)', example: 'Берёза белая', origin: 'Древнерусское', category: 'природа' },
+            { id: 287, word: 'Осина', meaning: 'Осина (устар.)', example: 'Осина трепещет', origin: 'Древнерусское', category: 'природа' },
+            { id: 288, word: 'Клён', meaning: 'Клён (устар.)', example: 'Клён осенний', origin: 'Древнерусское', category: 'природа' },
+            { id: 289, word: 'Ива', meaning: 'Ива (устар.)', example: 'Ива плакучая', origin: 'Древнерусское', category: 'природа' },
+            { id: 290, word: 'Верба', meaning: 'Верба (устар.)', example: 'Верба распустилась', origin: 'Древнерусское', category: 'природа' },
+            { id: 291, word: 'Тополь', meaning: 'Тополь (устар.)', example: 'Тополь высокий', origin: 'Древнерусское', category: 'природа' },
+            { id: 292, word: 'Ясень', meaning: 'Ясень (устар.)', example: 'Ясень стройный', origin: 'Древнерусское', category: 'природа' },
+            { id: 293, word: 'Вяз', meaning: 'Вяз (устар.)', example: 'Вяз раскидистый', origin: 'Древнерусское', category: 'природа' },
+            { id: 294, word: 'Липа', meaning: 'Липа (устар.)', example: 'Липа цветёт', origin: 'Древнерусское', category: 'природа' },
+            { id: 295, word: 'Ольха', meaning: 'Ольха (устар.)', example: 'Ольха у реки', origin: 'Древнерусское', category: 'природа' },
+            // === АБСТРАКТНОЕ (40) ===
+            { id: 296, word: 'Баять', meaning: 'Рассказывать, говорить', example: 'Старики баяли о былых временах', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 297, word: 'Гостьба', meaning: 'Празднество, пир, застолье', example: 'На гостьбе всяк весел', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 298, word: 'Молвить', meaning: 'Сказать, произнести', example: 'Молвил слово тихое', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 299, word: 'Неволя', meaning: 'Зависимость, рабство', example: 'Жить в неволе горько', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 300, word: 'Недруг', meaning: 'Враг, противник', example: 'Недруг ковал интриги', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 301, word: 'Немочь', meaning: 'Болезнь, недомогание', example: 'Немочь свалила с ног', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 302, word: 'Благолепие', meaning: 'Красота, величественность', example: 'Благолепие храма', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 303, word: 'Благочестие', meaning: 'Набожность, почитание Бога', example: 'Благочестие старца', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 304, word: 'Благодать', meaning: 'Божественная милость', example: 'Благодать снизошла на него', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 305, word: 'Скорбь', meaning: 'Печаль, горесть', example: 'Скорбь по умершему', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 306, word: 'Уныние', meaning: 'Подавленность, упадок духа', example: 'Уныние овладело им', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 307, word: 'Умиление', meaning: 'Умиление, радость со слезами', example: 'Умиление от добрых вестей', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 308, word: 'Рок', meaning: 'Судьба, участь', example: 'Рок решил его судьбу', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 309, word: 'Удел', meaning: 'Судьба, доля', example: 'Удел его был горек', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 310, word: 'Жребий', meaning: 'Судьба, рок', example: 'Жребий пал на него', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 311, word: 'Прок', meaning: 'Толк, польза', example: 'Прок от этого дела', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 312, word: 'Смута', meaning: 'Волнение, беспорядок', example: 'Смута в государстве', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 313, word: 'Тлен', meaning: 'Тление, гибель', example: 'Тлен и прах', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 314, word: 'Туга', meaning: 'Тоска, печаль', example: 'Туга зелёная', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 315, word: 'Стыд', meaning: 'Позор, срам', example: 'Стыд покрыл его', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 316, word: 'Срам', meaning: 'Стыд, позор', example: 'Срам на старость', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 317, word: 'Добродетель', meaning: 'Положительное нравственное качество', example: 'Добродетель украшает человека', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 318, word: 'Порок', meaning: 'Недостаток, злой нрав', example: 'Порок развращает', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 319, word: 'Нрав', meaning: 'Характер, обычай', example: 'Нрав у него крутой', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 320, word: 'Обычай', meaning: 'Привычка, традиция', example: 'По обычаю предков', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 321, word: 'Благодарение', meaning: 'Благодарность', example: 'Благодарение Господу', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 322, word: 'Смиренномудрие', meaning: 'Смиренная мудрость', example: 'Смиренномудрие украшает', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 323, word: 'Целомудрие', meaning: 'Душевная чистота, девственность', example: 'Целомудрие девицы', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 324, word: 'Мзда', meaning: 'Плата, награда, воздаяние', example: 'Мзда за труды', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 325, word: 'Тщета', meaning: 'Суета, тщеславие, напрасность', example: 'Тщета мирская', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 326, word: 'Нищета', meaning: 'Крайняя бедность', example: 'Нищета и разорение', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 327, word: 'Скудость', meaning: 'Недостаток, бедность', example: 'Скудость ума', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 328, word: 'Праздность', meaning: 'Безделье, лень', example: 'Праздность губит', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 329, word: 'Сласть', meaning: 'Удовольствие, наслаждение (в высоком смысле)', example: 'Сласть духовная', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 330, word: 'Горечь', meaning: 'Горе, скорбь', example: 'Горечь утраты', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 331, word: 'Кротость', meaning: 'Мягкость, смирение', example: 'Кротость нрава', origin: 'Церковнославянизм', category: 'абстрактное' },
+            { id: 332, word: 'Сердечность', meaning: 'Искренность, душевность', example: 'Сердечность в общении', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 333, word: 'Радость', meaning: 'Радость (устар.)', example: 'Радость великая', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 334, word: 'Печаль', meaning: 'Печаль (устар.)', example: 'Печаль в сердце', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 335, word: 'Гнев', meaning: 'Гнев (устар.)', example: 'Гнев царя', origin: 'Древнерусское', category: 'абстрактное' },
+            // === ПРЕДМЕТЫ (40) ===
+            { id: 336, word: 'Лучина', meaning: 'Тонкая щепка для освещения', example: 'Лучина трещала', origin: 'Древнерусское', category: 'предметы' },
+            { id: 337, word: 'Огниво', meaning: 'Приспособление для добывания огня', example: 'Огниво высекало искры', origin: 'Древнерусское', category: 'предметы' },
+            { id: 338, word: 'Таган', meaning: 'Металлический треножник', example: 'Таган для костра', origin: 'Тюркское', category: 'предметы' },
+            { id: 339, word: 'Ухват', meaning: 'Инструмент для доставания горшков из печи', example: 'Ухват у печи', origin: 'Древнерусское', category: 'предметы' },
+            { id: 340, word: 'Чугунок', meaning: 'Чугунный горшок', example: 'Чугунок с кашей', origin: 'Древнерусское', category: 'предметы' },
+            { id: 341, word: 'Сундук', meaning: 'Большой деревянный ящик с крышкой', example: 'Сундук с приданым', origin: 'Древнерусское', category: 'предметы' },
+            { id: 342, word: 'Ларец', meaning: 'Небольшой ящик для драгоценностей', example: 'Ларец с украшениями', origin: 'Древнерусское', category: 'предметы' },
+            { id: 343, word: 'Шкатулка', meaning: 'Небольшая коробочка для мелких вещей', example: 'Шкатулка с кольцами', origin: 'Древнерусское', category: 'предметы' },
+            { id: 344, word: 'Рушник', meaning: 'Полотенце с вышивкой', example: 'Рушник на иконе', origin: 'Древнерусское', category: 'предметы' },
+            { id: 345, word: 'Скатерть', meaning: 'Покрывало на стол (устар.)', example: 'Скатерть браная', origin: 'Древнерусское', category: 'предметы' },
+            { id: 346, word: 'Скамья', meaning: 'Деревянная лавка (устар.)', example: 'Скамья в сенях', origin: 'Древнерусское', category: 'предметы' },
+            { id: 347, word: 'Платье', meaning: 'Верхняя одежда (устар.)', example: 'Платье богатое', origin: 'Древнерусское', category: 'предметы' },
+            { id: 348, word: 'Щипец', meaning: 'Инструмент для щипания', example: 'Щипец для снятия накипи', origin: 'Древнерусское', category: 'предметы' },
+            { id: 349, word: 'Чапельник', meaning: 'Сковородник', example: 'Чапельник на плите', origin: 'Древнерусское', category: 'предметы' },
+            { id: 350, word: 'Кочерга', meaning: 'Инструмент для ворошения углей', example: 'Кочерга у печи', origin: 'Древнерусское', category: 'предметы' },
+            { id: 351, word: 'Утюг', meaning: 'Приспособление для глажки (устар.)', example: 'Утюг на углях', origin: 'Древнерусское', category: 'предметы' },
+            { id: 352, word: 'Рубель', meaning: 'Доска для разглаживания белья', example: 'Рубель для выколачивания', origin: 'Древнерусское', category: 'предметы' },
+            { id: 353, word: 'Коромысло', meaning: 'Палочка для ношения вёдер', example: 'Коромысло на плече', origin: 'Древнерусское', category: 'предметы' },
+            { id: 354, word: 'Веретено', meaning: 'Инструмент для прядения', example: 'Веретено жужжало', origin: 'Древнерусское', category: 'предметы' },
+            { id: 355, word: 'Прялка', meaning: 'Приспособление для прядения', example: 'Прялка у окна', origin: 'Древнерусское', category: 'предметы' },
+            { id: 356, word: 'Ткацкий станок', meaning: 'Станок для ткачества', example: 'Ткацкий станок в горнице', origin: 'Древнерусское', category: 'предметы' },
+            { id: 357, word: 'Челнок', meaning: 'Приспособление для ткачества', example: 'Челнок летал в станке', origin: 'Древнерусское', category: 'предметы' },
+            { id: 358, word: 'Игла', meaning: 'Игла для шитья (устар.)', example: 'Игла острая', origin: 'Древнерусское', category: 'предметы' },
+            { id: 359, word: 'Наперсток', meaning: 'Колпачок для пальца', example: 'Наперсток на пальце', origin: 'Древнерусское', category: 'предметы' },
+            { id: 360, word: 'Ножницы', meaning: 'Инструмент для резания', example: 'Ножницы острые', origin: 'Древнерусское', category: 'предметы' },
+            { id: 361, word: 'Топор', meaning: 'Инструмент для рубки', example: 'Топор для дров', origin: 'Древнерусское', category: 'предметы' },
+            { id: 362, word: 'Молоток', meaning: 'Инструмент для забивания', example: 'Молоток с гвоздями', origin: 'Древнерусское', category: 'предметы' },
+            { id: 363, word: 'Клещи', meaning: 'Инструмент для захвата', example: 'Клещи кузнеца', origin: 'Древнерусское', category: 'предметы' },
+            { id: 364, word: 'Пила', meaning: 'Инструмент для резания', example: 'Пила для досок', origin: 'Древнерусское', category: 'предметы' },
+            { id: 365, word: 'Рубанок', meaning: 'Инструмент для строгания', example: 'Рубанок для досок', origin: 'Древнерусское', category: 'предметы' },
+            { id: 366, word: 'Долото', meaning: 'Инструмент для долбления', example: 'Долото по дереву', origin: 'Древнерусское', category: 'предметы' },
+            { id: 367, word: 'Стамеска', meaning: 'Инструмент для резьбы', example: 'Стамеска по дереву', origin: 'Древнерусское', category: 'предметы' },
+            { id: 368, word: 'Сверло', meaning: 'Инструмент для сверления', example: 'Сверло по металлу', origin: 'Древнерусское', category: 'предметы' },
+            { id: 369, word: 'Бурав', meaning: 'Ручное сверло', example: 'Бурав для дерева', origin: 'Древнерусское', category: 'предметы' },
+            { id: 370, word: 'Коловорот', meaning: 'Ручная дрель', example: 'Коловорот для отверстий', origin: 'Древнерусское', category: 'предметы' },
+            { id: 371, word: 'Напильник', meaning: 'Инструмент для шлифовки', example: 'Напильник для металла', origin: 'Древнерусское', category: 'предметы' },
+            { id: 372, word: 'Рашпиль', meaning: 'Грубый напильник', example: 'Рашпиль для дерева', origin: 'Древнерусское', category: 'предметы' },
+            { id: 373, word: 'Зубило', meaning: 'Инструмент для рубки металла', example: 'Зубило для резки', origin: 'Древнерусское', category: 'предметы' },
+            { id: 374, word: 'Кернер', meaning: 'Инструмент для разметки', example: 'Кернер для отверстий', origin: 'Древнерусское', category: 'предметы' },
+            { id: 375, word: 'Циркуль', meaning: 'Инструмент для черчения', example: 'Циркуль для геометрии', origin: 'Древнерусское', category: 'предметы' },
+            // === ДЕЙСТВИЯ (40) ===
+            { id: 376, word: 'Глаголать', meaning: 'Говорить, рассказывать', example: 'Глаголать истину', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 377, word: 'Ведать', meaning: 'Знать', example: 'Ведаю я это дело', origin: 'Древнерусское', category: 'действия' },
+            { id: 378, word: 'Вельми', meaning: 'Очень, сильно', example: 'Вельми удивился', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 379, word: 'Всуе', meaning: 'Напрасно, зря', example: 'Всуе трудился', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 380, word: 'Вотще', meaning: 'Напрасно, тщетно', example: 'Вотще искал', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 381, word: 'Добре', meaning: 'Хорошо, ладно', example: 'Добре сделал', origin: 'Древнерусское', category: 'действия' },
+            { id: 382, word: 'Днесь', meaning: 'Сегодня, ныне', example: 'Днесь мы здесь', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 383, word: 'Доколе', meaning: 'До каких пор', example: 'Доколе ждать?', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 384, word: 'Дотоле', meaning: 'До тех пор', example: 'Дотоле не уйду', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 385, word: 'Егда', meaning: 'Когда', example: 'Егда вернётся?', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 386, word: 'Ибо', meaning: 'Потому что, так как', example: 'Ибо так надо', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 387, word: 'Иже', meaning: 'Который (церк.)', example: 'Человек иже...', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 388, word: 'Камо', meaning: 'Куда', example: 'Камо грядеши?', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 389, word: 'Кий', meaning: 'Который (вопрос.)', example: 'Кий путь избрать?', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 390, word: 'Лепо', meaning: 'Красиво, прилично', example: 'Лепо говорить', origin: 'Древнерусское', category: 'действия' },
+            { id: 391, word: 'Любо', meaning: 'Нравится, угодно', example: 'Любо мне', origin: 'Древнерусское', category: 'действия' },
+            { id: 392, word: 'Нежели', meaning: 'Чем (сравнительная частица)', example: 'Лучше умереть, нежели сдаться', origin: 'Древнерусское', category: 'действия' },
+            { id: 393, word: 'Обаче', meaning: 'Однако, но', example: 'Обаче я не согласен', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 394, word: 'Одесную', meaning: 'Справа', example: 'Одесную от престола', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 395, word: 'Ошую', meaning: 'Слева', example: 'Ошую от входа', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 396, word: 'Паки', meaning: 'Снова, опять', example: 'Паки приду', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 397, word: 'Паче', meaning: 'Более, тем более', example: 'Паче всего', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 398, word: 'Понеже', meaning: 'Поскольку, так как', example: 'Понеже я здесь', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 399, word: 'Присно', meaning: 'Всегда, постоянно', example: 'Присно и вечно', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 400, word: 'Сей', meaning: 'Этот, эта, это', example: 'Сей человек', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 401, word: 'Сице', meaning: 'Так, таким образом', example: 'Сице и было', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 402, word: 'Сый', meaning: 'Сущий, который есть', example: 'Сый во веки', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 403, word: 'Толико', meaning: 'Столько', example: 'Толико лет прошло', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 404, word: 'Убо', meaning: 'Итак, следовательно', example: 'Убо пойдём', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 405, word: 'Уды', meaning: 'Части тела (церк.)', example: 'Уды телесные', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 406, word: 'Уне', meaning: 'Лучше (церк.)', example: 'Уне есть', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 407, word: 'Чесо', meaning: 'Что (вопросит.)', example: 'Чесо хочешь?', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 408, word: 'Яко', meaning: 'Как, будто, что', example: 'Яко ангел', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 409, word: 'Яже', meaning: 'Которая (жен. род)', example: 'Жена яже...', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 410, word: 'Еже', meaning: 'Которое (сред. род)', example: 'Дело еже...', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 411, word: 'Иже (повтор)', meaning: 'Который (муж. род)', example: 'Человек иже...', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 412, word: 'Аще', meaning: 'Если', example: 'Аще не придешь', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 413, word: 'Дабы', meaning: 'Чтобы', example: 'Дабы не забыть', origin: 'Древнерусское', category: 'действия' },
+            { id: 414, word: 'Егда (повтор)', meaning: 'Когда', example: 'Егда настанет час', origin: 'Церковнославянизм', category: 'действия' },
+            { id: 415, word: 'Понеже (повтор)', meaning: 'Поскольку', example: 'Понеже я здесь', origin: 'Церковнославянизм', category: 'действия' },
+            // === ВОЕННОЕ (40) ===
+            { id: 416, word: 'Брань', meaning: 'Битва, сражение', example: 'Брань кровавая', origin: 'Древнерусское', category: 'военное' },
+            { id: 417, word: 'Ратник', meaning: 'Воин, солдат', example: 'Ратник стоял на страже', origin: 'Древнерусское', category: 'военное' },
+            { id: 418, word: 'Рать', meaning: 'Войско, армия', example: 'Рать могучая', origin: 'Древнерусское', category: 'военное' },
+            { id: 419, word: 'Доспехи', meaning: 'Боевое снаряжение', example: 'Доспехи блестели на солнце', origin: 'Древнерусское', category: 'военное' },
+            { id: 420, word: 'Меч', meaning: 'Холодное оружие', example: 'Меч булатный', origin: 'Древнерусское', category: 'военное' },
+            { id: 421, word: 'Копьё', meaning: 'Оружие с длинным древком', example: 'Копьё острое', origin: 'Древнерусское', category: 'военное' },
+            { id: 422, word: 'Лук', meaning: 'Оружие для стрельбы', example: 'Лук тугой', origin: 'Древнерусское', category: 'военное' },
+            { id: 423, word: 'Стрела', meaning: 'Снаряд для лука', example: 'Стрела оперённая', origin: 'Древнерусское', category: 'военное' },
+            { id: 424, word: 'Кольчуга', meaning: 'Доспех из колец', example: 'Кольчуга надёжная', origin: 'Древнерусское', category: 'военное' },
+            { id: 425, word: 'Шлем', meaning: 'Защитный головной убор', example: 'Шлем сверкал', origin: 'Древнерусское', category: 'военное' },
+            { id: 426, word: 'Щит', meaning: 'Защитное приспособление', example: 'Щит крепкий', origin: 'Древнерусское', category: 'военное' },
+            { id: 427, word: 'Палаш', meaning: 'Прямой меч', example: 'Палаш тяжёлый', origin: 'Древнерусское', category: 'военное' },
+            { id: 428, word: 'Сабля', meaning: 'Изогнутый меч', example: 'Сабля острая', origin: 'Древнерусское', category: 'военное' },
+            { id: 429, word: 'Булава', meaning: 'Дубинка с шипами', example: 'Булава с шипами', origin: 'Древнерусское', category: 'военное' },
+            { id: 430, word: 'Кинжал', meaning: 'Короткий меч', example: 'Кинжал за поясом', origin: 'Древнерусское', category: 'военное' },
+            { id: 431, word: 'Пика', meaning: 'Длинное копьё', example: 'Пика пехотная', origin: 'Древнерусское', category: 'военное' },
+            { id: 432, word: 'Арбалет', meaning: 'Механический лук', example: 'Арбалет натянули', origin: 'Древнерусское', category: 'военное' },
+            { id: 433, word: 'Самострел', meaning: 'Арбалет (устар.)', example: 'Самострел зарядили', origin: 'Древнерусское', category: 'военное' },
+            { id: 434, word: 'Порох', meaning: 'Взрывчатое вещество', example: 'Порох чёрный', origin: 'Древнерусское', category: 'военное' },
+            { id: 435, word: 'Пушка', meaning: 'Орудие', example: 'Пушка палила', origin: 'Древнерусское', category: 'военное' },
+            { id: 436, word: 'Мушкет', meaning: 'Старинное ружьё', example: 'Мушкет длинный', origin: 'Древнерусское', category: 'военное' },
+            { id: 437, word: 'Пистоль', meaning: 'Старинный пистолет', example: 'Пистоль заряжен', origin: 'Древнерусское', category: 'военное' },
+            { id: 438, word: 'Сапёр', meaning: 'Военно-инженерный специалист', example: 'Сапёр строил укрепления', origin: 'Древнерусское', category: 'военное' },
+            { id: 439, word: 'Кавалерия', meaning: 'Конное войско', example: 'Кавалерия атаковала', origin: 'Древнерусское', category: 'военное' },
+            { id: 440, word: 'Пехота', meaning: 'Пешее войско', example: 'Пехота шла в атаку', origin: 'Древнерусское', category: 'военное' },
+            { id: 441, word: 'Обоз', meaning: 'Военный транспорт', example: 'Обоз с провиантом', origin: 'Древнерусское', category: 'военное' },
+            { id: 442, word: 'Знамя', meaning: 'Воинское знамя', example: 'Знамя реяло', origin: 'Древнерусское', category: 'военное' },
+            { id: 443, word: 'Хоругвь', meaning: 'Церковное знамя', example: 'Хоругвь несли впереди', origin: 'Древнерусское', category: 'военное' },
+            { id: 444, word: 'Штандарт', meaning: 'Полковое знамя', example: 'Штандарт полка', origin: 'Древнерусское', category: 'военное' },
+            { id: 445, word: 'Герольд', meaning: 'Вестник', example: 'Герольд объявил войну', origin: 'Древнерусское', category: 'военное' },
+            { id: 446, word: 'Трубач', meaning: 'Военный музыкант', example: 'Трубач играл сигнал', origin: 'Древнерусское', category: 'военное' },
+            { id: 447, word: 'Барабанщик', meaning: 'Военный барабанщик', example: 'Барабанщик бил в барабан', origin: 'Древнерусское', category: 'военное' },
+            { id: 448, word: 'Казак', meaning: 'Вольный воин', example: 'Казак на коне', origin: 'Тюркское', category: 'военное' },
+            { id: 449, word: 'Гусар', meaning: 'Лёгкий кавалерист', example: 'Гусар в доломане', origin: 'Древнерусское', category: 'военное' },
+            { id: 450, word: 'Улан', meaning: 'Кавалерист с пикой', example: 'Улан атаковал', origin: 'Древнерусское', category: 'военное' },
+            { id: 451, word: 'Драгун', meaning: 'Кавалерист', example: 'Драгун спешился', origin: 'Древнерусское', category: 'военное' },
+            { id: 452, word: 'Кирасир', meaning: 'Тяжёлый кавалерист', example: 'Кирасир в латах', origin: 'Древнерусское', category: 'военное' },
+            { id: 453, word: 'Стрелок', meaning: 'Солдат-стрелок', example: 'Стрелок прицелился', origin: 'Древнерусское', category: 'военное' },
+            { id: 454, word: 'Ружейник', meaning: 'Солдат с ружьём', example: 'Ружейник на посту', origin: 'Древнерусское', category: 'военное' },
+            { id: 455, word: 'Гренадер', meaning: 'Гранатомётчик', example: 'Гренадер метнул гранату', origin: 'Древнерусское', category: 'военное' },
+            // === ТОРГОВЛЯ (30) ===
+            { id: 456, word: 'Торг', meaning: 'Рынок, базар', example: 'На торгу шумели', origin: 'Древнерусское', category: 'торговля' },
+            { id: 457, word: 'Лавка', meaning: 'Торговая палатка', example: 'Лавка купца', origin: 'Древнерусское', category: 'торговля' },
+            { id: 458, word: 'Товар', meaning: 'Продукт торговли', example: 'Товар заморский', origin: 'Древнерусское', category: 'торговля' },
+            { id: 459, word: 'Купец (повтор)', meaning: 'Торговец', example: 'Купец барышник', origin: 'Тюркское', category: 'торговля' },
+            { id: 460, word: 'Торговля', meaning: 'Обмен товарами', example: 'Торговля бойкая', origin: 'Древнерусское', category: 'торговля' },
+            { id: 461, word: 'Барышник', meaning: 'Мелкий торговец', example: 'Барышник на базаре', origin: 'Древнерусское', category: 'торговля' },
+            { id: 462, word: 'Меняла', meaning: 'Обменщик денег', example: 'Меняла у ворот', origin: 'Древнерусское', category: 'торговля' },
+            { id: 463, word: 'Рынок', meaning: 'Место торговли (устар.)', example: 'Рынок шумный', origin: 'Древнерусское', category: 'торговля' },
+            { id: 464, word: 'Ярмарка', meaning: 'Крупный рынок', example: 'Ярмарка раз в году', origin: 'Древнерусское', category: 'торговля' },
+            { id: 465, word: 'Гостиный двор', meaning: 'Комплекс торговых помещений', example: 'Гостиный двор в городе', origin: 'Древнерусское', category: 'торговля' },
+            { id: 466, word: 'Ларь', meaning: 'Прилавок', example: 'Ларь с товаром', origin: 'Древнерусское', category: 'торговля' },
+            { id: 467, word: 'Пуд', meaning: 'Мера веса (16 кг)', example: 'Пуд соли', origin: 'Древнерусское', category: 'меры' },
+            { id: 468, word: 'Фунт', meaning: 'Мера веса (0,4 кг)', example: 'Фунт мяса', origin: 'Древнерусское', category: 'меры' },
+            { id: 469, word: 'Золотник', meaning: 'Мера веса (4,26 г)', example: 'Золотник золота', origin: 'Древнерусское', category: 'меры' },
+            { id: 470, word: 'Лот', meaning: 'Мера веса (12,8 г)', example: 'Лот серебра', origin: 'Древнерусское', category: 'меры' },
+            { id: 471, word: 'Пуд (повтор)', meaning: 'Мера веса', example: 'Пуд муки', origin: 'Древнерусское', category: 'меры' },
+            { id: 472, word: 'Берковец', meaning: 'Мера веса (около 164 кг)', example: 'Берковец соли', origin: 'Древнерусское', category: 'меры' },
+            { id: 473, word: 'Четверть', meaning: 'Мера объёма (около 200 л)', example: 'Четверть зерна', origin: 'Древнерусское', category: 'меры' },
+            { id: 474, word: 'Гарнец', meaning: 'Мера объёма (3,28 л)', example: 'Гарнец овса', origin: 'Древнерусское', category: 'меры' },
+            { id: 475, word: 'Ведро', meaning: 'Мера объёма (12,3 л)', example: 'Ведро воды', origin: 'Древнерусское', category: 'меры' },
+            { id: 476, word: 'Кружка', meaning: 'Мера объёма (1,23 л)', example: 'Кружка пива', origin: 'Древнерусское', category: 'меры' },
+            { id: 477, word: 'Аршин', meaning: 'Мера длины (0,71 м)', example: 'Аршин сукна', origin: 'Древнерусское', category: 'меры' },
+            { id: 478, word: 'Сажень', meaning: 'Мера длины (2,13 м)', example: 'Сажень дров', origin: 'Древнерусское', category: 'меры' },
+            { id: 479, word: 'Верста', meaning: 'Мера длины (1,066 км)', example: 'Верста от дома', origin: 'Древнерусское', category: 'меры' },
+            { id: 480, word: 'Мерить', meaning: 'Измерять (устар.)', example: 'Мерить землю', origin: 'Древнерусское', category: 'меры' },
+            { id: 481, word: 'Вершок', meaning: 'Мера длины (4,45 см)', example: 'Вершок от горшка', origin: 'Древнерусское', category: 'меры' },
+            { id: 482, word: 'Дюйм', meaning: 'Мера длины (2,54 см)', example: 'Дюйм от плеча', origin: 'Древнерусское', category: 'меры' },
+            { id: 483, word: 'Фут', meaning: 'Мера длины (30,48 см)', example: 'Фут от земли', origin: 'Древнерусское', category: 'меры' },
+            { id: 484, word: 'Ярд', meaning: 'Мера длины (0,914 м)', example: 'Ярд ткани', origin: 'Древнерусское', category: 'меры' },
+            { id: 485, word: 'Миля', meaning: 'Мера длины (около 1,6 км)', example: 'Миля от моря', origin: 'Древнерусское', category: 'меры' },
+            // === ЗЕМЛЕДЕЛИЕ (30) ===
+            { id: 486, word: 'Соха', meaning: 'Примитивное орудие для пахоты', example: 'Соха для земли', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 487, word: 'Борона', meaning: 'Орудие для боронования', example: 'Борона железная', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 488, word: 'Серп', meaning: 'Инструмент для жатвы', example: 'Серп острый', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 489, word: 'Коса', meaning: 'Инструмент для косьбы', example: 'Коса звенит', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 490, word: 'Грабля', meaning: 'Инструмент для сгребания', example: 'Грабля для сена', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 491, word: 'Цеп', meaning: 'Инструмент для молотьбы', example: 'Цеп молотил', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 492, word: 'Мельница', meaning: 'Сооружение для помола зерна', example: 'Мельница ветряная', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 493, word: 'Овин (повтор)', meaning: 'Сушилка для зерна', example: 'Овин топили', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 494, word: 'Гумно (повтор)', meaning: 'Ток для молотьбы', example: 'Гумно с обмолоченным зерном', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 495, word: 'Сноп', meaning: 'Связанные стебли', example: 'Сноп пшеницы', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 496, word: 'Стог', meaning: 'Копна сена', example: 'Стог сена', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 497, word: 'Засев', meaning: 'Посев', example: 'Засев яровой', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 498, word: 'Пашня', meaning: 'Вспаханное поле', example: 'Пашня чёрная', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 499, word: 'Нива (повтор)', meaning: 'Поле', example: 'Нива золотая', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 500, word: 'Сад', meaning: 'Плодовый сад', example: 'Сад яблоневый', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 501, word: 'Плуг', meaning: 'Орудие для пахоты', example: 'Плуг тяжелый', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 502, word: 'Борозда', meaning: 'Канавка от плуга', example: 'Борозда ровная', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 503, word: 'Огород', meaning: 'Участок для овощей', example: 'Огород с грядками', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 504, word: 'Грядка', meaning: 'Полоса земли для посадок', example: 'Грядка с морковью', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 505, word: 'Парник', meaning: 'Укрытие для рассады', example: 'Парник с огурцами', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 506, word: 'Теплица', meaning: 'Закрытый огород', example: 'Теплица с помидорами', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 507, word: 'Жатва', meaning: 'Время уборки хлеба', example: 'Жатва началась', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 508, word: 'Сенокос', meaning: 'Косьба травы', example: 'Сенокос в разгаре', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 509, word: 'Урожай', meaning: 'Собранный урожай', example: 'Урожай богатый', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 510, word: 'Зерно', meaning: 'Зерно (устар.)', example: 'Зерно пшеницы', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 511, word: 'Солома', meaning: 'Стебли после обмолота', example: 'Солома для подстилки', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 512, word: 'Сено', meaning: 'Сушёная трава', example: 'Сено на корм', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 513, word: 'Силос', meaning: 'Корм для скота', example: 'Силос в яме', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 514, word: 'Навоз', meaning: 'Удобрение', example: 'Навоз для огорода', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 515, word: 'Удобрение', meaning: 'Удобрение (устар.)', example: 'Удобрение земли', origin: 'Древнерусское', category: 'земледелие' },
+            // === МОРСКОЕ (25) ===
+            { id: 516, word: 'Корабль', meaning: 'Большое судно', example: 'Корабль вышел в море', origin: 'Древнерусское', category: 'морское' },
+            { id: 517, word: 'Лодка', meaning: 'Маленькое судно', example: 'Лодка у причала', origin: 'Древнерусское', category: 'морское' },
+            { id: 518, word: 'Парус', meaning: 'Ткань для движения ветром', example: 'Парус надулся', origin: 'Древнерусское', category: 'морское' },
+            { id: 519, word: 'Весло', meaning: 'Инструмент для гребли', example: 'Весло в руках', origin: 'Древнерусское', category: 'морское' },
+            { id: 520, word: 'Якорь', meaning: 'Приспособление для остановки', example: 'Якорь бросили', origin: 'Древнерусское', category: 'морское' },
+            { id: 521, word: 'Руль', meaning: 'Устройство для управления', example: 'Руль повернули', origin: 'Древнерусское', category: 'морское' },
+            { id: 522, word: 'Матрос', meaning: 'Член экипажа', example: 'Матрос на палубе', origin: 'Древнерусское', category: 'морское' },
+            { id: 523, word: 'Капитан', meaning: 'Командир судна', example: 'Капитан на мостике', origin: 'Древнерусское', category: 'морское' },
+            { id: 524, word: 'Шкипер', meaning: 'Капитан малого судна', example: 'Шкипер на шхуне', origin: 'Древнерусское', category: 'морское' },
+            { id: 525, word: 'Боцман', meaning: 'Старшина команды', example: 'Боцман свистел в дудку', origin: 'Древнерусское', category: 'морское' },
+            { id: 526, word: 'Юнга', meaning: 'Младший матрос', example: 'Юнга помогал', origin: 'Древнерусское', category: 'морское' },
+            { id: 527, word: 'Буря', meaning: 'Шторм', example: 'Буря разыгралась', origin: 'Древнерусское', category: 'морское' },
+            { id: 528, word: 'Штиль', meaning: 'Затишье', example: 'Штиль на море', origin: 'Древнерусское', category: 'морское' },
+            { id: 529, word: 'Волна', meaning: 'Волна (устар.)', example: 'Волна набегала', origin: 'Древнерусское', category: 'морское' },
+            { id: 530, word: 'Прибой', meaning: 'Волны у берега', example: 'Прибой шумел', origin: 'Древнерусское', category: 'морское' },
+            { id: 531, word: 'Порт', meaning: 'Гавань', example: 'Порт кораблей', origin: 'Древнерусское', category: 'морское' },
+            { id: 532, word: 'Док', meaning: 'Ремонтное сооружение', example: 'Док для кораблей', origin: 'Древнерусское', category: 'морское' },
+            { id: 533, word: 'Фарватер', meaning: 'Судоходный путь', example: 'Фарватер реки', origin: 'Древнерусское', category: 'морское' },
+            { id: 534, word: 'Маяк', meaning: 'Сигнальный огонь', example: 'Маяк в ночи', origin: 'Древнерусское', category: 'морское' },
+            { id: 535, word: 'Камбуз', meaning: 'Кухня на судне', example: 'Камбуз на корабле', origin: 'Древнерусское', category: 'морское' },
+            { id: 536, word: 'Кубрик', meaning: 'Помещение для команды', example: 'Кубрик матросов', origin: 'Древнерусское', category: 'морское' },
+            { id: 537, word: 'Рейд', meaning: 'Стоянка судов', example: 'Рейд в порту', origin: 'Древнерусское', category: 'морское' },
+            { id: 538, word: 'Швартов', meaning: 'Причальный канат', example: 'Швартов к причалу', origin: 'Древнерусское', category: 'морское' },
+            { id: 539, word: 'Трап', meaning: 'Лестница на судне', example: 'Трап на борт', origin: 'Древнерусское', category: 'морское' },
+            { id: 540, word: 'Шлюпка', meaning: 'Спасательная лодка', example: 'Шлюпка спущена на воду', origin: 'Древнерусское', category: 'морское' },
+            // === АРХИТЕКТУРА (25) ===
+            { id: 541, word: 'Собор', meaning: 'Главный храм', example: 'Собор в центре города', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 542, word: 'Церковь', meaning: 'Христианский храм', example: 'Церковь с куполами', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 543, word: 'Колокольня', meaning: 'Башня с колоколами', example: 'Колокольня звенит', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 544, word: 'Часовня', meaning: 'Небольшая церковь', example: 'Часовня у дороги', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 545, word: 'Башня', meaning: 'Высокое строение', example: 'Башня крепости', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 546, word: 'Кремль', meaning: 'Городская крепость', example: 'Кремль в Москве', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 547, word: 'Крепость', meaning: 'Укреплённое сооружение', example: 'Крепость на холме', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 548, word: 'Стена', meaning: 'Оборонительная стена', example: 'Стена крепости', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 549, word: 'Ворота', meaning: 'Въездные ворота', example: 'Ворота открыты', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 550, word: 'Мост', meaning: 'Переход через реку', example: 'Мост через реку', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 551, word: 'Дворец', meaning: 'Княжеский дом', example: 'Дворец с колоннами', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 552, word: 'Особняк', meaning: 'Большой дом', example: 'Особняк на улице', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 553, word: 'Усадьба', meaning: 'Помещичий дом', example: 'Усадьба в лесу', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 554, word: 'Флигель', meaning: 'Пристройка', example: 'Флигель во дворе', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 555, word: 'Колонна', meaning: 'Вертикальная опора', example: 'Колонна из мрамора', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 556, word: 'Портик', meaning: 'Крытая галерея', example: 'Портик с колоннами', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 557, word: 'Арка', meaning: 'Дугообразное перекрытие', example: 'Арка на входе', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 558, word: 'Купол', meaning: 'Сферическое покрытие', example: 'Купол церкви', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 559, word: 'Шпиль', meaning: 'Остроконечная башня', example: 'Шпиль колокольни', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 560, word: 'Фронтон', meaning: 'Верхняя часть фасада', example: 'Фронтон с лепниной', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 561, word: 'Карниз', meaning: 'Выступающий элемент', example: 'Карниз украшен', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 562, word: 'Парапет', meaning: 'Низкая ограда', example: 'Парапет на крыше', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 563, word: 'Балкон', meaning: 'Выступающая площадка', example: 'Балкон с кованой решёткой', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 564, word: 'Терраса', meaning: 'Открытая площадка', example: 'Терраса в саду', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 565, word: 'Фасад', meaning: 'Лицевая сторона здания', example: 'Фасад из кирпича', origin: 'Древнерусское', category: 'архитектура' },
+            // === СУДЕБНОЕ (20) ===
+            { id: 566, word: 'Суд', meaning: 'Судебное учреждение', example: 'Суд вынес приговор', origin: 'Древнерусское', category: 'судебное' },
+            { id: 567, word: 'Право', meaning: 'Закон (устар.)', example: 'Право на жизнь', origin: 'Древнерусское', category: 'судебное' },
+            { id: 568, word: 'Закон', meaning: 'Закон (устар.)', example: 'Закон божий', origin: 'Древнерусское', category: 'судебное' },
+            { id: 569, word: 'Приговор', meaning: 'Решение суда', example: 'Приговор оглашён', origin: 'Древнерусское', category: 'судебное' },
+            { id: 570, word: 'Обвинение', meaning: 'Обвинение (устар.)', example: 'Обвинение в краже', origin: 'Древнерусское', category: 'судебное' },
+            { id: 571, word: 'Защита', meaning: 'Защита (устар.)', example: 'Защита в суде', origin: 'Древнерусское', category: 'судебное' },
+            { id: 572, word: 'Истец', meaning: 'Тот, кто подаёт иск', example: 'Истец требовал возмещения', origin: 'Древнерусское', category: 'судебное' },
+            { id: 573, word: 'Ответчик', meaning: 'Тот, против кого иск', example: 'Ответчик отрицал вину', origin: 'Древнерусское', category: 'судебное' },
+            { id: 574, word: 'Свидетель', meaning: 'Очевидец', example: 'Свидетель дал показания', origin: 'Древнерусское', category: 'судебное' },
+            { id: 575, word: 'Показание', meaning: 'Рассказ свидетеля', example: 'Показание записано', origin: 'Древнерусское', category: 'судебное' },
+            { id: 576, word: 'Улик', meaning: 'Улика (устар.)', example: 'Улика против него', origin: 'Древнерусское', category: 'судебное' },
+            { id: 577, word: 'Доказательство', meaning: 'Довод (устар.)', example: 'Доказательство вины', origin: 'Древнерусское', category: 'судебное' },
+            { id: 578, word: 'Преступление', meaning: 'Преступление (устар.)', example: 'Преступление раскрыто', origin: 'Древнерусское', category: 'судебное' },
+            { id: 579, word: 'Наказание', meaning: 'Кара', example: 'Наказание по закону', origin: 'Древнерусское', category: 'судебное' },
+            { id: 580, word: 'Казнь', meaning: 'Смертная казнь', example: 'Казнь на площади', origin: 'Древнерусское', category: 'судебное' },
+            { id: 581, word: 'Тюрьма', meaning: 'Место заключения', example: 'Тюрьма за решёткой', origin: 'Древнерусское', category: 'судебное' },
+            { id: 582, word: 'Острог', meaning: 'Тюрьма (устар.)', example: 'Острог в Сибири', origin: 'Древнерусское', category: 'судебное' },
+            { id: 583, word: 'Каторга', meaning: 'Принудительные работы', example: 'Каторга в рудниках', origin: 'Древнерусское', category: 'судебное' },
+            { id: 584, word: 'Ссылка', meaning: 'Высылка', example: 'Ссылка в Сибирь', origin: 'Древнерусское', category: 'судебное' },
+            { id: 585, word: 'Помилование', meaning: 'Смягчение наказания', example: 'Помилование даровано', origin: 'Древнерусское', category: 'судебное' },
+            // === ДЕНЬГИ (15) ===
+            { id: 586, word: 'Рубль', meaning: 'Денежная единица (устар.)', example: 'Рубль серебряный', origin: 'Древнерусское', category: 'деньги' },
+            { id: 587, word: 'Гривна', meaning: 'Денежная единица (устар.)', example: 'Гривна кун', origin: 'Древнерусское', category: 'деньги' },
+            { id: 588, word: 'Копейка', meaning: 'Мелкая монета', example: 'Копейка медная', origin: 'Древнерусское', category: 'деньги' },
+            { id: 589, word: 'Алтын', meaning: 'Трёхкопеечная монета', example: 'Алтын на базаре', origin: 'Древнерусское', category: 'деньги' },
+            { id: 590, word: 'Полтина', meaning: 'Полрубля', example: 'Полтина серебром', origin: 'Древнерусское', category: 'деньги' },
+            { id: 591, word: 'Червонец', meaning: 'Золотая монета', example: 'Червонец золотой', origin: 'Древнерусское', category: 'деньги' },
+            { id: 592, word: 'Дукат', meaning: 'Золотая монета', example: 'Дукат венецианский', origin: 'Древнерусское', category: 'деньги' },
+            { id: 593, word: 'Талер', meaning: 'Серебряная монета', example: 'Талер на вес', origin: 'Древнерусское', category: 'деньги' },
+            { id: 594, word: 'Деньга', meaning: 'Монета (устар.)', example: 'Деньга медная', origin: 'Древнерусское', category: 'деньги' },
+            { id: 595, word: 'Полушка', meaning: 'Четверть копейки', example: 'Полушка на мелочи', origin: 'Древнерусское', category: 'деньги' },
+            { id: 596, word: 'Грош', meaning: 'Монета (устар.)', example: 'Грош ломаный', origin: 'Древнерусское', category: 'деньги' },
+            { id: 597, word: 'Шеляг', meaning: 'Монета (устар.)', example: 'Шеляг фальшивый', origin: 'Древнерусское', category: 'деньги' },
+            { id: 598, word: 'Золотой', meaning: 'Золотая монета', example: 'Золотой на цепочке', origin: 'Древнерусское', category: 'деньги' },
+            { id: 599, word: 'Серебряный', meaning: 'Серебряная монета', example: 'Серебряный на столе', origin: 'Древнерусское', category: 'деньги' },
+            { id: 600, word: 'Медяк', meaning: 'Медная монета', example: 'Медяк в кармане', origin: 'Древнерусское', category: 'деньги' },
+            // === ЖИВОТНЫЕ (25) ===
+            { id: 601, word: 'Конь', meaning: 'Лошадь (поэт.)', example: 'Конь вороной', origin: 'Древнерусское', category: 'животные' },
+            { id: 602, word: 'Кобыла', meaning: 'Лошадь-самка', example: 'Кобыла с жеребёнком', origin: 'Древнерусское', category: 'животные' },
+            { id: 603, word: 'Жеребец', meaning: 'Самец лошади', example: 'Жеребец резвый', origin: 'Древнерусское', category: 'животные' },
+            { id: 604, word: 'Корова', meaning: 'Корова (устар.)', example: 'Корова на лугу', origin: 'Древнерусское', category: 'животные' },
+            { id: 605, word: 'Бык', meaning: 'Бык (устар.)', example: 'Бык могучий', origin: 'Древнерусское', category: 'животные' },
+            { id: 606, word: 'Овца', meaning: 'Овца (устар.)', example: 'Овца в загоне', origin: 'Древнерусское', category: 'животные' },
+            { id: 607, word: 'Баран', meaning: 'Баран (устар.)', example: 'Баран в стаде', origin: 'Древнерусское', category: 'животные' },
+            { id: 608, word: 'Коза', meaning: 'Коза (устар.)', example: 'Коза на скале', origin: 'Древнерусское', category: 'животные' },
+            { id: 609, word: 'Свинья', meaning: 'Свинья (устар.)', example: 'Свинья в хлеву', origin: 'Древнерусское', category: 'животные' },
+            { id: 610, word: 'Волк', meaning: 'Волк (устар.)', example: 'Волк в лесу', origin: 'Древнерусское', category: 'животные' },
+            { id: 611, word: 'Медведь', meaning: 'Медведь (устар.)', example: 'Медведь в берлоге', origin: 'Древнерусское', category: 'животные' },
+            { id: 612, word: 'Лиса', meaning: 'Лиса (устар.)', example: 'Лиса хитрая', origin: 'Древнерусское', category: 'животные' },
+            { id: 613, word: 'Заяц', meaning: 'Заяц (устар.)', example: 'Заяц в поле', origin: 'Древнерусское', category: 'животные' },
+            { id: 614, word: 'Ёж', meaning: 'Ёж (устар.)', example: 'Ёж в траве', origin: 'Древнерусское', category: 'животные' },
+            { id: 615, word: 'Белка', meaning: 'Белка (устар.)', example: 'Белка на ветке', origin: 'Древнерусское', category: 'животные' },
+            { id: 616, word: 'Соболь', meaning: 'Соболь (устар.)', example: 'Соболь в лесу', origin: 'Древнерусское', category: 'животные' },
+            { id: 617, word: 'Лисица', meaning: 'Лисица (устар.)', example: 'Лисица в нору', origin: 'Древнерусское', category: 'животные' },
+            { id: 618, word: 'Олень', meaning: 'Олень (устар.)', example: 'Олень в лесу', origin: 'Древнерусское', category: 'животные' },
+            { id: 619, word: 'Лось', meaning: 'Лось (устар.)', example: 'Лось в чаще', origin: 'Древнерусское', category: 'животные' },
+            { id: 620, word: 'Кабан', meaning: 'Кабан (устар.)', example: 'Кабан в лесу', origin: 'Древнерусское', category: 'животные' },
+            { id: 621, word: 'Змея', meaning: 'Змея (устар.)', example: 'Змея в траве', origin: 'Древнерусское', category: 'животные' },
+            { id: 622, word: 'Ящерица', meaning: 'Ящерица (устар.)', example: 'Ящерица на камне', origin: 'Древнерусское', category: 'животные' },
+            { id: 623, word: 'Лягушка', meaning: 'Лягушка (устар.)', example: 'Лягушка в пруду', origin: 'Древнерусское', category: 'животные' },
+            { id: 624, word: 'Мышь', meaning: 'Мышь (устар.)', example: 'Мышь в подполье', origin: 'Древнерусское', category: 'животные' },
+            { id: 625, word: 'Крыса', meaning: 'Крыса (устар.)', example: 'Крыса на корабле', origin: 'Древнерусское', category: 'животные' },
+            // === РАСТЕНИЯ (25) ===
+            { id: 626, word: 'Дуб', meaning: 'Дуб (устар.)', example: 'Дуб могучий', origin: 'Древнерусское', category: 'растения' },
+            { id: 627, word: 'Берёза', meaning: 'Берёза (устар.)', example: 'Берёза белая', origin: 'Древнерусское', category: 'растения' },
+            { id: 628, word: 'Сосна', meaning: 'Сосна (устар.)', example: 'Сосна высокая', origin: 'Древнерусское', category: 'растения' },
+            { id: 629, word: 'Ель', meaning: 'Ель (устар.)', example: 'Ель зелёная', origin: 'Древнерусское', category: 'растения' },
+            { id: 630, word: 'Клён', meaning: 'Клён (устар.)', example: 'Клён осенний', origin: 'Древнерусское', category: 'растения' },
+            { id: 631, word: 'Ива', meaning: 'Ива (устар.)', example: 'Ива плакучая', origin: 'Древнерусское', category: 'растения' },
+            { id: 632, word: 'Липа', meaning: 'Липа (устар.)', example: 'Липа цветёт', origin: 'Древнерусское', category: 'растения' },
+            { id: 633, word: 'Вяз', meaning: 'Вяз (устар.)', example: 'Вяз раскидистый', origin: 'Древнерусское', category: 'растения' },
+            { id: 634, word: 'Ясень', meaning: 'Ясень (устар.)', example: 'Ясень стройный', origin: 'Древнерусское', category: 'растения' },
+            { id: 635, word: 'Тополь', meaning: 'Тополь (устар.)', example: 'Тополь высокий', origin: 'Древнерусское', category: 'растения' },
+            { id: 636, word: 'Рябина', meaning: 'Рябина (устар.)', example: 'Рябина красная', origin: 'Древнерусское', category: 'растения' },
+            { id: 637, word: 'Калина', meaning: 'Калина (устар.)', example: 'Калина красная', origin: 'Древнерусское', category: 'растения' },
+            { id: 638, word: 'Малина', meaning: 'Малина (устар.)', example: 'Малина в лесу', origin: 'Древнерусское', category: 'растения' },
+            { id: 639, word: 'Смородина', meaning: 'Смородина (устар.)', example: 'Смородина черная', origin: 'Древнерусское', category: 'растения' },
+            { id: 640, word: 'Крыжовник', meaning: 'Крыжовник (устар.)', example: 'Крыжовник зелёный', origin: 'Древнерусское', category: 'растения' },
+            { id: 641, word: 'Клубника', meaning: 'Клубника (устар.)', example: 'Клубника в саду', origin: 'Древнерусское', category: 'растения' },
+            { id: 642, word: 'Земляника', meaning: 'Земляника (устар.)', example: 'Земляника в лесу', origin: 'Древнерусское', category: 'растения' },
+            { id: 643, word: 'Черника', meaning: 'Черника (устар.)', example: 'Черника в лесу', origin: 'Древнерусское', category: 'растения' },
+            { id: 644, word: 'Голубика', meaning: 'Голубика (устар.)', example: 'Голубика на болоте', origin: 'Древнерусское', category: 'растения' },
+            { id: 645, word: 'Брусника', meaning: 'Брусника (устар.)', example: 'Брусника на холме', origin: 'Древнерусское', category: 'растения' },
+            { id: 646, word: 'Клюква', meaning: 'Клюква (устар.)', example: 'Клюква в лесу', origin: 'Древнерусское', category: 'растения' },
+            { id: 647, word: 'Осина', meaning: 'Осина (устар.)', example: 'Осина трепещет', origin: 'Древнерусское', category: 'растения' },
+            { id: 648, word: 'Ольха', meaning: 'Ольха (устар.)', example: 'Ольха у реки', origin: 'Древнерусское', category: 'растения' },
+            { id: 649, word: 'Верба', meaning: 'Верба (устар.)', example: 'Верба распустилась', origin: 'Древнерусское', category: 'растения' },
+            { id: 650, word: 'Крапива', meaning: 'Крапива (устар.)', example: 'Крапива у забора', origin: 'Древнерусское', category: 'растения' },
+            // === БОЛЕЗНИ (15) ===
+            { id: 651, word: 'Хворь', meaning: 'Болезнь', example: 'Хворь одолела', origin: 'Древнерусское', category: 'болезни' },
+            { id: 652, word: 'Немочь (повтор)', meaning: 'Болезнь', example: 'Немочь свалила', origin: 'Древнерусское', category: 'болезни' },
+            { id: 653, word: 'Чума', meaning: 'Смертельная болезнь', example: 'Чума косила людей', origin: 'Древнерусское', category: 'болезни' },
+            { id: 654, word: 'Оспа', meaning: 'Инфекционная болезнь', example: 'Оспа оставляла рубцы', origin: 'Древнерусское', category: 'болезни' },
+            { id: 655, word: 'Лихорадка', meaning: 'Высокая температура', example: 'Лихорадка трясла', origin: 'Древнерусское', category: 'болезни' },
+            { id: 656, word: 'Кашель', meaning: 'Кашель (устар.)', example: 'Кашель мучил', origin: 'Древнерусское', category: 'болезни' },
+            { id: 657, word: 'Простуда', meaning: 'Простуда (устар.)', example: 'Простуда в ногах', origin: 'Древнерусское', category: 'болезни' },
+            { id: 658, word: 'Грипп', meaning: 'Грипп (устар.)', example: 'Грипп косил', origin: 'Древнерусское', category: 'болезни' },
+            { id: 659, word: 'Насморк', meaning: 'Насморк (устар.)', example: 'Насморк мучил', origin: 'Древнерусское', category: 'болезни' },
+            { id: 660, word: 'Катар', meaning: 'Воспаление', example: 'Катар желудка', origin: 'Древнерусское', category: 'болезни' },
+            { id: 661, word: 'Эпидемия', meaning: 'Массовая болезнь', example: 'Эпидемия холеры', origin: 'Древнерусское', category: 'болезни' },
+            { id: 662, word: 'Мор', meaning: 'Массовая смерть', example: 'Мор на скотину', origin: 'Древнерусское', category: 'болезни' },
+            { id: 663, word: 'Язва', meaning: 'Рана, болезнь', example: 'Язва на ноге', origin: 'Древнерусское', category: 'болезни' },
+            { id: 664, word: 'Нарыв', meaning: 'Гнойное воспаление', example: 'Нарыв вскочил', origin: 'Древнерусское', category: 'болезни' },
+            { id: 665, word: 'Чирей', meaning: 'Фурункул', example: 'Чирей на спине', origin: 'Древнерусское', category: 'болезни' },
+            // === НАПИТКИ (15) ===
+            { id: 666, word: 'Квас (повтор)', meaning: 'Хлебный напиток', example: 'Квас деревенский', origin: 'Древнерусское', category: 'напитки' },
+            { id: 667, word: 'Мед (повтор)', meaning: 'Медовый напиток', example: 'Мед хмельной', origin: 'Древнерусское', category: 'напитки' },
+            { id: 668, word: 'Сбитень (повтор)', meaning: 'Горячий напиток', example: 'Сбитень с мёдом', origin: 'Древнерусское', category: 'напитки' },
+            { id: 669, word: 'Взвар (повтор)', meaning: 'Отвар из сухофруктов', example: 'Взвар на праздник', origin: 'Древнерусское', category: 'напитки' },
+            { id: 670, word: 'Пиво (повтор)', meaning: 'Пенный напиток', example: 'Пиво на праздник', origin: 'Древнерусское', category: 'напитки' },
+            { id: 671, word: 'Вина (повтор)', meaning: 'Виноградное вино', example: 'Вина заморские', origin: 'Греческое', category: 'напитки' },
+            { id: 672, word: 'Квас (повтор)', meaning: 'Квас (устар.)', example: 'Квас с мятой', origin: 'Древнерусское', category: 'напитки' },
+            { id: 673, word: 'Сыта (повтор)', meaning: 'Медовый напиток', example: 'Сыта с пряностями', origin: 'Древнерусское', category: 'напитки' },
+            { id: 674, word: 'Брага (повтор)', meaning: 'Домашнее пиво', example: 'Брага на столе', origin: 'Древнерусское', category: 'напитки' },
+            { id: 675, word: 'Кумыс', meaning: 'Напиток из кобыльего молока', example: 'Кумыс в степи', origin: 'Тюркское', category: 'напитки' },
+            { id: 676, word: 'Айран', meaning: 'Кисломолочный напиток', example: 'Айран на обед', origin: 'Тюркское', category: 'напитки' },
+            { id: 677, word: 'Шербет', meaning: 'Фруктовый напиток', example: 'Шербет на жару', origin: 'Тюркское', category: 'напитки' },
+            { id: 678, word: 'Компот', meaning: 'Напиток из фруктов', example: 'Компот на зиму', origin: 'Древнерусское', category: 'напитки' },
+            { id: 679, word: 'Морс', meaning: 'Ягодный напиток', example: 'Морс клюквенный', origin: 'Древнерусское', category: 'напитки' },
+            { id: 680, word: 'Настой', meaning: 'Настой трав', example: 'Настой валерианы', origin: 'Древнерусское', category: 'напитки' },
+            // === ДОБАВКА (ЕЩЁ 100+ СЛОВ) ===
+            // ТЕЛО (доп.)
+            { id: 681, word: 'Око', meaning: 'Глаз (поэт.)', example: 'Око видит', origin: 'Древнерусское', category: 'тело' },
+            { id: 682, word: 'Ухо (повтор)', meaning: 'Ухо (устар.)', example: 'Ухо слышит', origin: 'Древнерусское', category: 'тело' },
+            { id: 683, word: 'Нос', meaning: 'Нос (устар.)', example: 'Нос орлиный', origin: 'Древнерусское', category: 'тело' },
+            { id: 684, word: 'Рот', meaning: 'Рот (устар.)', example: 'Рот открыт', origin: 'Древнерусское', category: 'тело' },
+            { id: 685, word: 'Зуб', meaning: 'Зуб (устар.)', example: 'Зуб острый', origin: 'Древнерусское', category: 'тело' },
+            // ОДЕЖДА (доп.)
+            { id: 686, word: 'Шапка', meaning: 'Головной убор (устар.)', example: 'Шапка на голове', origin: 'Древнерусское', category: 'одежда' },
+            { id: 687, word: 'Картуз', meaning: 'Мужской головной убор', example: 'Картуз кожаный', origin: 'Древнерусское', category: 'одежда' },
+            { id: 688, word: 'Колпак', meaning: 'Головной убор', example: 'Колпак шутовской', origin: 'Древнерусское', category: 'одежда' },
+            { id: 689, word: 'Рукавица', meaning: 'Перчатка', example: 'Рукавица кожаная', origin: 'Древнерусское', category: 'одежда' },
+            { id: 690, word: 'Варежка', meaning: 'Тёплая рукавица', example: 'Варежка шерстяная', origin: 'Древнерусское', category: 'одежда' },
+            // ЖИЛИЩЕ (доп.)
+            { id: 691, word: 'Дом', meaning: 'Дом (устар.)', example: 'Дом родной', origin: 'Древнерусское', category: 'жилище' },
+            { id: 692, word: 'Квартира', meaning: 'Квартира (устар.)', example: 'Квартира съёмная', origin: 'Древнерусское', category: 'жилище' },
+            { id: 693, word: 'Комната', meaning: 'Комната (устар.)', example: 'Комната светлая', origin: 'Древнерусское', category: 'жилище' },
+            { id: 694, word: 'Кухня', meaning: 'Кухня (устар.)', example: 'Кухня с печью', origin: 'Древнерусское', category: 'жилище' },
+            { id: 695, word: 'Прихожая', meaning: 'Прихожая (устар.)', example: 'Прихожая с вешалкой', origin: 'Древнерусское', category: 'жилище' },
+            // ЕДА (доп.)
+            { id: 696, word: 'Суп', meaning: 'Суп (устар.)', example: 'Суп с лапшой', origin: 'Древнерусское', category: 'еда' },
+            { id: 697, word: 'Борщ', meaning: 'Борщ (устар.)', example: 'Борщ со сметаной', origin: 'Древнерусское', category: 'еда' },
+            { id: 698, word: 'Окрошка', meaning: 'Окрошка (устар.)', example: 'Окрошка на квасе', origin: 'Древнерусское', category: 'еда' },
+            { id: 699, word: 'Винегрет', meaning: 'Винегрет (устар.)', example: 'Винегрет с горошком', origin: 'Древнерусское', category: 'еда' },
+            { id: 700, word: 'Салат', meaning: 'Салат (устар.)', example: 'Салат овощной', origin: 'Древнерусское', category: 'еда' },
+            // ОБЩЕСТВО (доп.)
+            { id: 701, word: 'Царь', meaning: 'Монарх', example: 'Царь всея Руси', origin: 'Древнерусское', category: 'общество' },
+            { id: 702, word: 'Князь', meaning: 'Владелец удела', example: 'Князь новгородский', origin: 'Древнерусское', category: 'общество' },
+            { id: 703, word: 'Граф', meaning: 'Дворянский титул', example: 'Граф Орлов', origin: 'Древнерусское', category: 'общество' },
+            { id: 704, word: 'Барон', meaning: 'Дворянский титул', example: 'Барон фон Штейн', origin: 'Древнерусское', category: 'общество' },
+            { id: 705, word: 'Герцог', meaning: 'Высший дворянский титул', example: 'Герцог Веллингтон', origin: 'Древнерусское', category: 'общество' },
+            // ПРОФЕССИИ (доп.)
+            { id: 706, word: 'Повар', meaning: 'Повар (устар.)', example: 'Повар на кухне', origin: 'Древнерусское', category: 'профессии' },
+            { id: 707, word: 'Пекарь', meaning: 'Пекарь (устар.)', example: 'Пекарь в пекарне', origin: 'Древнерусское', category: 'профессии' },
+            { id: 708, word: 'Мельник', meaning: 'Мельник (устар.)', example: 'Мельник на мельнице', origin: 'Древнерусское', category: 'профессии' },
+            { id: 709, word: 'Кузнец (повтор)', meaning: 'Кузнец', example: 'Кузнец в кузнице', origin: 'Древнерусское', category: 'профессии' },
+            { id: 710, word: 'Плотник (повтор)', meaning: 'Плотник', example: 'Плотник с топором', origin: 'Древнерусское', category: 'профессии' },
+            // РЕЛИГИЯ (доп.)
+            { id: 711, word: 'Бог', meaning: 'Высшее существо', example: 'Бог и мир', origin: 'Древнерусское', category: 'религия' },
+            { id: 712, word: 'Икона', meaning: 'Образ', example: 'Икона Божьей Матери', origin: 'Древнерусское', category: 'религия' },
+            { id: 713, word: 'Свеча', meaning: 'Восковая свеча', example: 'Свеча за здравие', origin: 'Древнерусское', category: 'религия' },
+            { id: 714, word: 'Ладан', meaning: 'Благовоние', example: 'Ладан в церкви', origin: 'Древнерусское', category: 'религия' },
+            { id: 715, word: 'Молитва', meaning: 'Молитва (устар.)', example: 'Молитва утром', origin: 'Древнерусское', category: 'религия' },
+            // ПРИРОДА (доп.)
+            { id: 716, word: 'Небо', meaning: 'Небо (устар.)', example: 'Небо синее', origin: 'Древнерусское', category: 'природа' },
+            { id: 717, word: 'Земля', meaning: 'Земля (устар.)', example: 'Земля кормилица', origin: 'Древнерусское', category: 'природа' },
+            { id: 718, word: 'Солнце', meaning: 'Солнце (устар.)', example: 'Солнце встало', origin: 'Древнерусское', category: 'природа' },
+            { id: 719, word: 'Луна', meaning: 'Луна (устар.)', example: 'Луна в небе', origin: 'Древнерусское', category: 'природа' },
+            { id: 720, word: 'Звезда', meaning: 'Звезда (устар.)', example: 'Звезда упала', origin: 'Древнерусское', category: 'природа' },
+            // АБСТРАКТНОЕ (доп.)
+            { id: 721, word: 'Воля', meaning: 'Свобода', example: 'Воля вольная', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 722, word: 'Доля', meaning: 'Судьба', example: 'Доля горькая', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 723, word: 'Участь', meaning: 'Судьба', example: 'Участь решена', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 724, word: 'Счастье', meaning: 'Удача', example: 'Счастье в доме', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 725, word: 'Горе', meaning: 'Беда', example: 'Горе в семье', origin: 'Древнерусское', category: 'абстрактное' },
+            // ПРЕДМЕТЫ (доп.)
+            { id: 726, word: 'Стол', meaning: 'Стол (устар.)', example: 'Стол дубовый', origin: 'Древнерусское', category: 'предметы' },
+            { id: 727, word: 'Стул', meaning: 'Стул (устар.)', example: 'Стул резной', origin: 'Древнерусское', category: 'предметы' },
+            { id: 728, word: 'Кровать', meaning: 'Кровать (устар.)', example: 'Кровать с балдахином', origin: 'Древнерусское', category: 'предметы' },
+            { id: 729, word: 'Шкаф', meaning: 'Шкаф (устар.)', example: 'Шкаф для одежды', origin: 'Древнерусское', category: 'предметы' },
+            { id: 730, word: 'Зеркало', meaning: 'Зеркало (устар.)', example: 'Зеркало в раме', origin: 'Древнерусское', category: 'предметы' },
+            // ДЕЙСТВИЯ (доп.)
+            { id: 731, word: 'Идти', meaning: 'Идти (устар.)', example: 'Идти в поход', origin: 'Древнерусское', category: 'действия' },
+            { id: 732, word: 'Бежать', meaning: 'Бежать (устар.)', example: 'Бежать от врага', origin: 'Древнерусское', category: 'действия' },
+            { id: 733, word: 'Стоять', meaning: 'Стоять (устар.)', example: 'Стоять на страже', origin: 'Древнерусское', category: 'действия' },
+            { id: 734, word: 'Сидеть', meaning: 'Сидеть (устар.)', example: 'Сидеть за столом', origin: 'Древнерусское', category: 'действия' },
+            { id: 735, word: 'Лежать', meaning: 'Лежать (устар.)', example: 'Лежать на печи', origin: 'Древнерусское', category: 'действия' },
+            // ВОЕННОЕ (доп.)
+            { id: 736, word: 'Армия', meaning: 'Войско', example: 'Армия врага', origin: 'Древнерусское', category: 'военное' },
+            { id: 737, word: 'Флот', meaning: 'Военный флот', example: 'Флот на рейде', origin: 'Древнерусское', category: 'военное' },
+            { id: 738, word: 'Гарнизон', meaning: 'Войсковая часть', example: 'Гарнизон крепости', origin: 'Древнерусское', category: 'военное' },
+            { id: 739, word: 'Солдат', meaning: 'Военнослужащий', example: 'Солдат в строю', origin: 'Древнерусское', category: 'военное' },
+            { id: 740, word: 'Офицер', meaning: 'Командир', example: 'Офицер на параде', origin: 'Древнерусское', category: 'военное' },
+            // ТОРГОВЛЯ (доп.)
+            { id: 741, word: 'Товары', meaning: 'Товары (устар.)', example: 'Товары на прилавке', origin: 'Древнерусское', category: 'торговля' },
+            { id: 742, word: 'Цена', meaning: 'Цена (устар.)', example: 'Цена на хлеб', origin: 'Древнерусское', category: 'торговля' },
+            { id: 743, word: 'Деньги', meaning: 'Деньги (устар.)', example: 'Деньги в мешке', origin: 'Древнерусское', category: 'торговля' },
+            { id: 744, word: 'Торговец', meaning: 'Торговец (устар.)', example: 'Торговец на рынке', origin: 'Древнерусское', category: 'торговля' },
+            { id: 745, word: 'Базар', meaning: 'Базар (устар.)', example: 'Базар шумит', origin: 'Древнерусское', category: 'торговля' },
+            // ЗЕМЛЕДЕЛИЕ (доп.)
+            { id: 746, word: 'Земледелец', meaning: 'Земледелец (устар.)', example: 'Земледелец в поле', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 747, word: 'Крестьянин', meaning: 'Крестьянин (устар.)', example: 'Крестьянин в избе', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 748, word: 'Урожайность', meaning: 'Урожайность (устар.)', example: 'Урожайность высокая', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 749, word: 'Озимь', meaning: 'Озимь (устар.)', example: 'Озимь взошла', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 750, word: 'Яровое', meaning: 'Яровое (устар.)', example: 'Яровое поле', origin: 'Древнерусское', category: 'земледелие' },
+            // МОРСКОЕ (доп.)
+            { id: 751, word: 'Море', meaning: 'Море (устар.)', example: 'Море синее', origin: 'Древнерусское', category: 'морское' },
+            { id: 752, word: 'Плавание', meaning: 'Плавание (устар.)', example: 'Плавание по морю', origin: 'Древнерусское', category: 'морское' },
+            { id: 753, word: 'Корабль (повтор)', meaning: 'Корабль', example: 'Корабль в порту', origin: 'Древнерусское', category: 'морское' },
+            { id: 754, word: 'Мачта', meaning: 'Мачта (устар.)', example: 'Мачта высокая', origin: 'Древнерусское', category: 'морское' },
+            { id: 755, word: 'Палуба', meaning: 'Палуба (устар.)', example: 'Палуба чистая', origin: 'Древнерусское', category: 'морское' },
+            // АРХИТЕКТУРА (доп.)
+            { id: 756, word: 'Здание', meaning: 'Здание (устар.)', example: 'Здание красивое', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 757, word: 'Строение', meaning: 'Строение (устар.)', example: 'Строение древнее', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 758, word: 'Крыша', meaning: 'Крыша (устар.)', example: 'Крыша соломенная', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 759, word: 'Окно', meaning: 'Окно (устар.)', example: 'Окно резное', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 760, word: 'Дверь', meaning: 'Дверь (устар.)', example: 'Дверь дубовая', origin: 'Древнерусское', category: 'архитектура' },
+            // СУДЕБНОЕ (доп.)
+            { id: 761, word: 'Право (повтор)', meaning: 'Право', example: 'Право на суд', origin: 'Древнерусское', category: 'судебное' },
+            { id: 762, word: 'Закон (повтор)', meaning: 'Закон', example: 'Закон страны', origin: 'Древнерусское', category: 'судебное' },
+            { id: 763, word: 'Преступник', meaning: 'Преступник (устар.)', example: 'Преступник в кандалах', origin: 'Древнерусское', category: 'судебное' },
+            { id: 764, word: 'Тюрьма (повтор)', meaning: 'Тюрьма', example: 'Тюрьма за решёткой', origin: 'Древнерусское', category: 'судебное' },
+            { id: 765, word: 'Судья (повтор)', meaning: 'Судья', example: 'Судья в мантии', origin: 'Древнерусское', category: 'судебное' },
+            // ДЕНЬГИ (доп.)
+            { id: 766, word: 'Рубль (повтор)', meaning: 'Рубль', example: 'Рубль серебряный', origin: 'Древнерусское', category: 'деньги' },
+            { id: 767, word: 'Копейка (повтор)', meaning: 'Копейка', example: 'Копейка копейку', origin: 'Древнерусское', category: 'деньги' },
+            { id: 768, word: 'Алтын (повтор)', meaning: 'Алтын', example: 'Алтын на базаре', origin: 'Древнерусское', category: 'деньги' },
+            { id: 769, word: 'Грош (повтор)', meaning: 'Грош', example: 'Грош ломаный', origin: 'Древнерусское', category: 'деньги' },
+            { id: 770, word: 'Деньга (повтор)', meaning: 'Деньга', example: 'Деньга медная', origin: 'Древнерусское', category: 'деньги' },
+            // ЖИВОТНЫЕ (доп.)
+            { id: 771, word: 'Кот', meaning: 'Кот (устар.)', example: 'Кот у печки', origin: 'Древнерусское', category: 'животные' },
+            { id: 772, word: 'Собака', meaning: 'Собака (устар.)', example: 'Собака на цепи', origin: 'Древнерусское', category: 'животные' },
+            { id: 773, word: 'Птица', meaning: 'Птица (устар.)', example: 'Птица в небе', origin: 'Древнерусское', category: 'животные' },
+            { id: 774, word: 'Рыба (повтор)', meaning: 'Рыба', example: 'Рыба в реке', origin: 'Древнерусское', category: 'животные' },
+            { id: 775, word: 'Зверь', meaning: 'Зверь (устар.)', example: 'Зверь в лесу', origin: 'Древнерусское', category: 'животные' },
+            // РАСТЕНИЯ (доп.)
+            { id: 776, word: 'Цветок', meaning: 'Цветок (устар.)', example: 'Цветок полевой', origin: 'Древнерусское', category: 'растения' },
+            { id: 777, word: 'Трава (повтор)', meaning: 'Трава', example: 'Трава зелёная', origin: 'Древнерусское', category: 'растения' },
+            { id: 778, word: 'Ягода', meaning: 'Ягода (устар.)', example: 'Ягода в лесу', origin: 'Древнерусское', category: 'растения' },
+            { id: 779, word: 'Гриб', meaning: 'Гриб (устар.)', example: 'Гриб в корзине', origin: 'Древнерусское', category: 'растения' },
+            { id: 780, word: 'Овощ', meaning: 'Овощ (устар.)', example: 'Овощ на грядке', origin: 'Древнерусское', category: 'растения' },
+            // БОЛЕЗНИ (доп.)
+            { id: 781, word: 'Болезнь', meaning: 'Болезнь (устар.)', example: 'Болезнь одолела', origin: 'Древнерусское', category: 'болезни' },
+            { id: 782, word: 'Грипп (повтор)', meaning: 'Грипп', example: 'Грипп в городе', origin: 'Древнерусское', category: 'болезни' },
+            { id: 783, word: 'Простуда (повтор)', meaning: 'Простуда', example: 'Простуда в ногах', origin: 'Древнерусское', category: 'болезни' },
+            { id: 784, word: 'Кашель (повтор)', meaning: 'Кашель', example: 'Кашель сухой', origin: 'Древнерусское', category: 'болезни' },
+            { id: 785, word: 'Насморк (повтор)', meaning: 'Насморк', example: 'Насморк насморк', origin: 'Древнерусское', category: 'болезни' },
+            // НАПИТКИ (доп.)
+            { id: 786, word: 'Чай', meaning: 'Чай (устар.)', example: 'Чай с мёдом', origin: 'Древнерусское', category: 'напитки' },
+            { id: 787, word: 'Кофе', meaning: 'Кофе (устар.)', example: 'Кофе чёрный', origin: 'Древнерусское', category: 'напитки' },
+            { id: 788, word: 'Молоко', meaning: 'Молоко (устар.)', example: 'Молоко парное', origin: 'Древнерусское', category: 'напитки' },
+            { id: 789, word: 'Сливки', meaning: 'Сливки (устар.)', example: 'Сливки в чай', origin: 'Древнерусское', category: 'напитки' },
+            { id: 790, word: 'Простокваша', meaning: 'Простокваша (устар.)', example: 'Простокваша в горшке', origin: 'Древнерусское', category: 'напитки' },
+            // === ДОПОЛНИТЕЛЬНЫЕ СЛОВА (ещё 100) ===
+            // ТЕЛО
+            { id: 791, word: 'Гортань', meaning: 'Гортань (устар.)', example: 'Гортань сжалась', origin: 'Древнерусское', category: 'тело' },
+            { id: 792, word: 'Затылок', meaning: 'Затылок (устар.)', example: 'Затылок лысый', origin: 'Древнерусское', category: 'тело' },
+            { id: 793, word: 'Подбородок', meaning: 'Подбородок (устар.)', example: 'Подбородок волевой', origin: 'Древнерусское', category: 'тело' },
+            // ОДЕЖДА
+            { id: 794, word: 'Жилет', meaning: 'Жилет (устар.)', example: 'Жилет бархатный', origin: 'Древнерусское', category: 'одежда' },
+            { id: 795, word: 'Пиджак', meaning: 'Пиджак (устар.)', example: 'Пиджак двубортный', origin: 'Древнерусское', category: 'одежда' },
+            { id: 796, word: 'Брюки', meaning: 'Брюки (устар.)', example: 'Брюки с отворотом', origin: 'Древнерусское', category: 'одежда' },
+            // ЖИЛИЩЕ
+            { id: 797, word: 'Балкон (повтор)', meaning: 'Балкон', example: 'Балкон с цветами', origin: 'Древнерусское', category: 'жилище' },
+            { id: 798, word: 'Терраса (повтор)', meaning: 'Терраса', example: 'Терраса в саду', origin: 'Древнерусское', category: 'жилище' },
+            { id: 799, word: 'Флигель (повтор)', meaning: 'Флигель', example: 'Флигель во дворе', origin: 'Древнерусское', category: 'жилище' },
+            // ЕДА
+            { id: 800, word: 'Котлета', meaning: 'Котлета (устар.)', example: 'Котлета по-киевски', origin: 'Древнерусское', category: 'еда' },
+            { id: 801, word: 'Пельмени', meaning: 'Пельмени (устар.)', example: 'Пельмени с мясом', origin: 'Древнерусское', category: 'еда' },
+            { id: 802, word: 'Вареники', meaning: 'Вареники (устар.)', example: 'Вареники с вишней', origin: 'Древнерусское', category: 'еда' },
+            // ОБЩЕСТВО
+            { id: 803, word: 'Граф (повтор)', meaning: 'Граф', example: 'Граф на балу', origin: 'Древнерусское', category: 'общество' },
+            { id: 804, word: 'Барон (повтор)', meaning: 'Барон', example: 'Барон в замке', origin: 'Древнерусское', category: 'общество' },
+            { id: 805, word: 'Герцог (повтор)', meaning: 'Герцог', example: 'Герцог на охоте', origin: 'Древнерусское', category: 'общество' },
+            // ПРОФЕССИИ
+            { id: 806, word: 'Садовник', meaning: 'Садовник (устар.)', example: 'Садовник ухаживал за садом', origin: 'Древнерусское', category: 'профессии' },
+            { id: 807, word: 'Огородник', meaning: 'Огородник (устар.)', example: 'Огородник сажал овощи', origin: 'Древнерусское', category: 'профессии' },
+            { id: 808, word: 'Пчеловод', meaning: 'Пчеловод (устар.)', example: 'Пчеловод на пасеке', origin: 'Древнерусское', category: 'профессии' },
+            // РЕЛИГИЯ
+            { id: 809, word: 'Псалтирь', meaning: 'Книга псалмов', example: 'Псалтирь на аналое', origin: 'Древнерусское', category: 'религия' },
+            { id: 810, word: 'Евангелие (повтор)', meaning: 'Евангелие', example: 'Евангелие в ризнице', origin: 'Древнерусское', category: 'религия' },
+            { id: 811, word: 'Апостол (повтор)', meaning: 'Апостол', example: 'Апостол в храме', origin: 'Древнерусское', category: 'религия' },
+            // ПРИРОДА
+            { id: 812, word: 'Ветер', meaning: 'Ветер (устар.)', example: 'Ветер в поле', origin: 'Древнерусское', category: 'природа' },
+            { id: 813, word: 'Дождь', meaning: 'Дождь (устар.)', example: 'Дождь льёт', origin: 'Древнерусское', category: 'природа' },
+            { id: 814, word: 'Снег', meaning: 'Снег (устар.)', example: 'Снег идёт', origin: 'Древнерусское', category: 'природа' },
+            // АБСТРАКТНОЕ
+            { id: 815, word: 'Душа', meaning: 'Душа (устар.)', example: 'Душа болит', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 816, word: 'Сердце', meaning: 'Сердце (устар.)', example: 'Сердце радуется', origin: 'Древнерусское', category: 'абстрактное' },
+            { id: 817, word: 'Ум', meaning: 'Ум (устар.)', example: 'Ум остр', origin: 'Древнерусское', category: 'абстрактное' },
+            // ПРЕДМЕТЫ
+            { id: 818, word: 'Книга', meaning: 'Книга (устар.)', example: 'Книга старая', origin: 'Древнерусское', category: 'предметы' },
+            { id: 819, word: 'Бумага', meaning: 'Бумага (устар.)', example: 'Бумага в стопке', origin: 'Древнерусское', category: 'предметы' },
+            { id: 820, word: 'Чернила', meaning: 'Чернила (устар.)', example: 'Чернила в чернильнице', origin: 'Древнерусское', category: 'предметы' },
+            // ДЕЙСТВИЯ
+            { id: 821, word: 'Петь', meaning: 'Петь (устар.)', example: 'Петь песни', origin: 'Древнерусское', category: 'действия' },
+            { id: 822, word: 'Плясать', meaning: 'Плясать (устар.)', example: 'Плясать на празднике', origin: 'Древнерусское', category: 'действия' },
+            { id: 823, word: 'Плакать', meaning: 'Плакать (устар.)', example: 'Плакать от горя', origin: 'Древнерусское', category: 'действия' },
+            // ВОЕННОЕ
+            { id: 824, word: 'Победа', meaning: 'Победа (устар.)', example: 'Победа в битве', origin: 'Древнерусское', category: 'военное' },
+            { id: 825, word: 'Поражение', meaning: 'Поражение (устар.)', example: 'Поражение врага', origin: 'Древнерусское', category: 'военное' },
+            { id: 826, word: 'Оружие', meaning: 'Оружие (устар.)', example: 'Оружие в руках', origin: 'Древнерусское', category: 'военное' },
+            // ТОРГОВЛЯ
+            { id: 827, word: 'Продажа', meaning: 'Продажа (устар.)', example: 'Продажа товаров', origin: 'Древнерусское', category: 'торговля' },
+            { id: 828, word: 'Покупка', meaning: 'Покупка (устар.)', example: 'Покупка на рынке', origin: 'Древнерусское', category: 'торговля' },
+            { id: 829, word: 'Цена (повтор)', meaning: 'Цена', example: 'Цена низкая', origin: 'Древнерусское', category: 'торговля' },
+            // ЗЕМЛЕДЕЛИЕ
+            { id: 830, word: 'Поле (повтор)', meaning: 'Поле', example: 'Поле пшеничное', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 831, word: 'Луг (повтор)', meaning: 'Луг', example: 'Луг цветущий', origin: 'Древнерусское', category: 'земледелие' },
+            { id: 832, word: 'Сад (повтор)', meaning: 'Сад', example: 'Сад яблоневый', origin: 'Древнерусское', category: 'земледелие' },
+            // МОРСКОЕ
+            { id: 833, word: 'Волна (повтор)', meaning: 'Волна', example: 'Волна на море', origin: 'Древнерусское', category: 'морское' },
+            { id: 834, word: 'Прибой (повтор)', meaning: 'Прибой', example: 'Прибой шумит', origin: 'Древнерусское', category: 'морское' },
+            { id: 835, word: 'Порт (повтор)', meaning: 'Порт', example: 'Порт кораблей', origin: 'Древнерусское', category: 'морское' },
+            // АРХИТЕКТУРА
+            { id: 836, word: 'Колонна (повтор)', meaning: 'Колонна', example: 'Колонна мраморная', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 837, word: 'Арка (повтор)', meaning: 'Арка', example: 'Арка на входе', origin: 'Древнерусское', category: 'архитектура' },
+            { id: 838, word: 'Купол (повтор)', meaning: 'Купол', example: 'Купол церкви', origin: 'Древнерусское', category: 'архитектура' },
+            // СУДЕБНОЕ
+            { id: 839, word: 'Приговор (повтор)', meaning: 'Приговор', example: 'Приговор оглашён', origin: 'Древнерусское', category: 'судебное' },
+            { id: 840, word: 'Обвинение (повтор)', meaning: 'Обвинение', example: 'Обвинение в краже', origin: 'Древнерусское', category: 'судебное' },
+            { id: 841, word: 'Защита (повтор)', meaning: 'Защита', example: 'Защита в суде', origin: 'Древнерусское', category: 'судебное' },
+            // ДЕНЬГИ
+            { id: 842, word: 'Рубль (повтор)', meaning: 'Рубль', example: 'Рубль серебряный', origin: 'Древнерусское', category: 'деньги' },
+            { id: 843, word: 'Копейка (повтор)', meaning: 'Копейка', example: 'Копейка медная', origin: 'Древнерусское', category: 'деньги' },
+            { id: 844, word: 'Алтын (повтор)', meaning: 'Алтын', example: 'Алтын на базаре', origin: 'Древнерусское', category: 'деньги' },
+            // ЖИВОТНЫЕ
+            { id: 845, word: 'Волк (повтор)', meaning: 'Волк', example: 'Волк в лесу', origin: 'Древнерусское', category: 'животные' },
+            { id: 846, word: 'Медведь (повтор)', meaning: 'Медведь', example: 'Медведь в берлоге', origin: 'Древнерусское', category: 'животные' },
+            { id: 847, word: 'Лиса (повтор)', meaning: 'Лиса', example: 'Лиса хитрая', origin: 'Древнерусское', category: 'животные' },
+            // РАСТЕНИЯ
+            { id: 848, word: 'Дуб (повтор)', meaning: 'Дуб', example: 'Дуб могучий', origin: 'Древнерусское', category: 'растения' },
+            { id: 849, word: 'Берёза (повтор)', meaning: 'Берёза', example: 'Берёза белая', origin: 'Древнерусское', category: 'растения' },
+            { id: 850, word: 'Сосна (повтор)', meaning: 'Сосна', example: 'Сосна высокая', origin: 'Древнерусское', category: 'растения' },
+            // БОЛЕЗНИ
+            { id: 851, word: 'Чума (повтор)', meaning: 'Чума', example: 'Чума косила', origin: 'Древнерусское', category: 'болезни' },
+            { id: 852, word: 'Оспа (повтор)', meaning: 'Оспа', example: 'Оспа оставляла рубцы', origin: 'Древнерусское', category: 'болезни' },
+            { id: 853, word: 'Лихорадка (повтор)', meaning: 'Лихорадка', example: 'Лихорадка трясла', origin: 'Древнерусское', category: 'болезни' },
+            // НАПИТКИ
+            { id: 854, word: 'Квас (повтор)', meaning: 'Квас', example: 'Квас в бочке', origin: 'Древнерусское', category: 'напитки' },
+            { id: 855, word: 'Мед (повтор)', meaning: 'Мед', example: 'Мед на столе', origin: 'Древнерусское', category: 'напитки' },
+            { id: 856, word: 'Сбитень (повтор)', meaning: 'Сбитень', example: 'Сбитень в кружке', origin: 'Древнерусское', category: 'напитки' },
+            // === БЫТ (60) ===
+            { id: 2000, word: 'Веретено', meaning: 'Инструмент для прядения', category: 'быт' },
+            { id: 2001, word: 'Коромысло', meaning: 'Палочка для ношения вёдер', category: 'быт' },
+            { id: 2002, word: 'Прялка', meaning: 'Приспособление для прядения', category: 'быт' },
+            { id: 2003, word: 'Лучина', meaning: 'Щепка для освещения', category: 'быт' },
+            { id: 2004, word: 'Ухват', meaning: 'Инструмент для горшков', category: 'быт' },
+            { id: 2005, word: 'Таган', meaning: 'Треножник для костра', category: 'быт' },
+            { id: 2006, word: 'Кочерга', meaning: 'Инструмент для углей', category: 'быт' },
+            { id: 2007, word: 'Чугунок', meaning: 'Чугунный горшок', category: 'быт' },
+            { id: 2008, word: 'Сундук', meaning: 'Большой ящик', category: 'быт' },
+            { id: 2009, word: 'Ларец', meaning: 'Ящик для драгоценностей', category: 'быт' },
+            { id: 2010, word: 'Шкатулка', meaning: 'Коробочка для мелочей', category: 'быт' },
+            { id: 2011, word: 'Рушник', meaning: 'Полотенце с вышивкой', category: 'быт' },
+            { id: 2012, word: 'Скатерть', meaning: 'Покрывало на стол', category: 'быт' },
+            { id: 2013, word: 'Скамья', meaning: 'Деревянная лавка', category: 'быт' },
+            { id: 2014, word: 'Корзина', meaning: 'Плетёная ёмкость', category: 'быт' },
+            { id: 2015, word: 'Крынка', meaning: 'Глиняный кувшин', category: 'быт' },
+            { id: 2016, word: 'Квашня', meaning: 'Кадка для теста', category: 'быт' },
+            { id: 2017, word: 'Рубель', meaning: 'Доска для глажки', category: 'быт' },
+            { id: 2018, word: 'Утюг', meaning: 'Приспособление для глажки', category: 'быт' },
+            { id: 2019, word: 'Метла', meaning: 'Инструмент для уборки', category: 'быт' },
+            { id: 2020, word: 'Веник', meaning: 'Пучок прутьев', category: 'быт' },
+            { id: 2021, word: 'Сковородник', meaning: 'Сковородник', category: 'быт' },
+            { id: 2022, word: 'Чапельник', meaning: 'Сковородник', category: 'быт' },
+            { id: 2023, word: 'Кочерга (повтор)', meaning: 'Инструмент для углей', category: 'быт' },
+            { id: 2024, word: 'Лопата', meaning: 'Садовый инструмент', category: 'быт' },
+            { id: 2025, word: 'Грабли', meaning: 'Инструмент для сена', category: 'быт' },
+            { id: 2026, word: 'Вилы', meaning: 'Инструмент для сена', category: 'быт' },
+            { id: 2027, word: 'Цеп', meaning: 'Инструмент для молотьбы', category: 'быт' },
+            { id: 2028, word: 'Молот', meaning: 'Тяжёлый молоток', category: 'быт' },
+            { id: 2029, word: 'Клещи', meaning: 'Инструмент для захвата', category: 'быт' },
+            { id: 2030, word: 'Пила', meaning: 'Инструмент для резания', category: 'быт' },
+            { id: 2031, word: 'Топор', meaning: 'Инструмент для рубки', category: 'быт' },
+            { id: 2032, word: 'Долото', meaning: 'Инструмент для долбления', category: 'быт' },
+            { id: 2033, word: 'Стамеска', meaning: 'Инструмент для резьбы', category: 'быт' },
+            { id: 2034, word: 'Рубанок', meaning: 'Инструмент для строгания', category: 'быт' },
+            { id: 2035, word: 'Сверло', meaning: 'Инструмент для сверления', category: 'быт' },
+            { id: 2036, word: 'Бурав', meaning: 'Ручное сверло', category: 'быт' },
+            { id: 2037, word: 'Коловорот', meaning: 'Ручная дрель', category: 'быт' },
+            { id: 2038, word: 'Напильник', meaning: 'Инструмент для шлифовки', category: 'быт' },
+            { id: 2039, word: 'Рашпиль', meaning: 'Грубый напильник', category: 'быт' },
+            { id: 2040, word: 'Зубило', meaning: 'Инструмент для резки металла', category: 'быт' },
+            { id: 2041, word: 'Кернер', meaning: 'Инструмент для разметки', category: 'быт' },
+            { id: 2042, word: 'Циркуль', meaning: 'Инструмент для черчения', category: 'быт' },
+            { id: 2043, word: 'Угольник', meaning: 'Инструмент для разметки', category: 'быт' },
+            { id: 2044, word: 'Линейка', meaning: 'Инструмент для измерения', category: 'быт' },
+            { id: 2045, word: 'Рулетка', meaning: 'Измерительная лента', category: 'быт' },
+            { id: 2046, word: 'Уровень', meaning: 'Инструмент для горизонта', category: 'быт' },
+            { id: 2047, word: 'Отвес', meaning: 'Инструмент для вертикали', category: 'быт' },
+            { id: 2048, word: 'Шнур', meaning: 'Верёвка', category: 'быт' },
+            { id: 2049, word: 'Маяк', meaning: 'Ориентир', category: 'быт' },
+            { id: 2050, word: 'Лекало', meaning: 'Шаблон', category: 'быт' },
+            { id: 2051, word: 'Шаблон', meaning: 'Образец', category: 'быт' },
+            { id: 2052, word: 'Трафарет', meaning: 'Шаблон с вырезами', category: 'быт' },
+            { id: 2053, word: 'Шпон', meaning: 'Тонкий лист дерева', category: 'быт' },
+            { id: 2054, word: 'Фанера', meaning: 'Склеенные листы', category: 'быт' },
+            { id: 2055, word: 'ДСП', meaning: 'Древесно-стружечная плита', category: 'быт' },
+            { id: 2056, word: 'ДВП', meaning: 'Древесно-волокнистая плита', category: 'быт' },
+            { id: 2057, word: 'Оргалит', meaning: 'Твёрдая ДВП', category: 'быт' },
+            { id: 2058, word: 'Текстолит', meaning: 'Слоистый пластик', category: 'быт' },
+            { id: 2059, word: 'Гетинакс', meaning: 'Слоистый пластик', category: 'быт' },
+            // === РЕМЕСЛО (50) ===
+            { id: 2060, word: 'Кузнец', meaning: 'Мастер по ковке', category: 'ремесло' },
+            { id: 2061, word: 'Плотник', meaning: 'Деревообработчик', category: 'ремесло' },
+            { id: 2062, word: 'Столяр', meaning: 'Мебельщик', category: 'ремесло' },
+            { id: 2063, word: 'Печник', meaning: 'Мастер по печам', category: 'ремесло' },
+            { id: 2064, word: 'Гончар', meaning: 'Мастер по глине', category: 'ремесло' },
+            { id: 2065, word: 'Кожемяка', meaning: 'Мастер по выделке кож', category: 'ремесло' },
+            { id: 2066, word: 'Сапожник', meaning: 'Мастер по обуви', category: 'ремесло' },
+            { id: 2067, word: 'Портной', meaning: 'Мастер по шитью', category: 'ремесло' },
+            { id: 2068, word: 'Швея', meaning: 'Женщина-портной', category: 'ремесло' },
+            { id: 2069, word: 'Бондарь', meaning: 'Мастер бочек', category: 'ремесло' },
+            { id: 2070, word: 'Каретник', meaning: 'Мастер карет', category: 'ремесло' },
+            { id: 2071, word: 'Седельник', meaning: 'Мастер сёдел', category: 'ремесло' },
+            { id: 2072, word: 'Извозчик', meaning: 'Возница', category: 'ремесло' },
+            { id: 2073, word: 'Ломовой', meaning: 'Извозчик тяжестей', category: 'ремесло' },
+            { id: 2074, word: 'Конюх', meaning: 'Слуга при лошадях', category: 'ремесло' },
+            { id: 2075, word: 'Зверолов', meaning: 'Ловец зверей', category: 'ремесло' },
+            { id: 2076, word: 'Бортник', meaning: 'Пчеловод', category: 'ремесло' },
+            { id: 2077, word: 'Хлебопек', meaning: 'Пекарь', category: 'ремесло' },
+            { id: 2078, word: 'Кухарь', meaning: 'Повар', category: 'ремесло' },
+            { id: 2079, word: 'Мельник', meaning: 'Работник мельницы', category: 'ремесло' },
+            { id: 2080, word: 'Кузнец (повтор)', meaning: 'Мастер по металлу', category: 'ремесло' },
+            { id: 2081, word: 'Плотник (повтор)', meaning: 'Деревообработчик', category: 'ремесло' },
+            { id: 2082, word: 'Столяр (повтор)', meaning: 'Мебельщик', category: 'ремесло' },
+            { id: 2083, word: 'Печник (повтор)', meaning: 'Мастер по печам', category: 'ремесло' },
+            { id: 2084, word: 'Гончар (повтор)', meaning: 'Мастер по глине', category: 'ремесло' },
+            { id: 2085, word: 'Кожемяка (повтор)', meaning: 'Мастер по выделке кож', category: 'ремесло' },
+            { id: 2086, word: 'Сапожник (повтор)', meaning: 'Мастер по обуви', category: 'ремесло' },
+            { id: 2087, word: 'Портной (повтор)', meaning: 'Мастер по шитью', category: 'ремесло' },
+            { id: 2088, word: 'Швея (повтор)', meaning: 'Женщина-портной', category: 'ремесло' },
+            { id: 2089, word: 'Бондарь (повтор)', meaning: 'Мастер бочек', category: 'ремесло' },
+            { id: 2090, word: 'Каретник (повтор)', meaning: 'Мастер карет', category: 'ремесло' },
+            { id: 2091, word: 'Седельник (повтор)', meaning: 'Мастер сёдел', category: 'ремесло' },
+            { id: 2092, word: 'Извозчик (повтор)', meaning: 'Возница', category: 'ремесло' },
+            { id: 2093, word: 'Ломовой (повтор)', meaning: 'Извозчик тяжестей', category: 'ремесло' },
+            { id: 2094, word: 'Конюх (повтор)', meaning: 'Слуга при лошадях', category: 'ремесло' },
+            { id: 2095, word: 'Зверолов (повтор)', meaning: 'Ловец зверей', category: 'ремесло' },
+            { id: 2096, word: 'Бортник (повтор)', meaning: 'Пчеловод', category: 'ремесло' },
+            { id: 2097, word: 'Хлебопек (повтор)', meaning: 'Пекарь', category: 'ремесло' },
+            { id: 2098, word: 'Кухарь (повтор)', meaning: 'Повар', category: 'ремесло' },
+            { id: 2099, word: 'Мельник (повтор)', meaning: 'Работник мельницы', category: 'ремесло' },
+            // === ПРИРОДА (40) ===
+            { id: 2100, word: 'Берег', meaning: 'Берег реки', category: 'природа' },
+            { id: 2101, word: 'Древо', meaning: 'Дерево', category: 'природа' },
+            { id: 2102, word: 'Лес', meaning: 'Лесной массив', category: 'природа' },
+            { id: 2103, word: 'Дуброва', meaning: 'Лиственный лес', category: 'природа' },
+            { id: 2104, word: 'Роща', meaning: 'Небольшой лес', category: 'природа' },
+            { id: 2105, word: 'Бор', meaning: 'Сосновый лес', category: 'природа' },
+            { id: 2106, word: 'Степь', meaning: 'Безлесная равнина', category: 'природа' },
+            { id: 2107, word: 'Поле', meaning: 'Пашня', category: 'природа' },
+            { id: 2108, word: 'Река', meaning: 'Водный поток', category: 'природа' },
+            { id: 2109, word: 'Озеро', meaning: 'Водоём', category: 'природа' },
+            { id: 2110, word: 'Гора', meaning: 'Высокий холм', category: 'природа' },
+            { id: 2111, word: 'Холм', meaning: 'Возвышенность', category: 'природа' },
+            { id: 2112, word: 'Дол', meaning: 'Лощина', category: 'природа' },
+            { id: 2113, word: 'Луг', meaning: 'Заливной луг', category: 'природа' },
+            { id: 2114, word: 'Нива', meaning: 'Поле', category: 'природа' },
+            { id: 2115, word: 'Ветвь', meaning: 'Ветка', category: 'природа' },
+            { id: 2116, word: 'Корень', meaning: 'Часть растения', category: 'природа' },
+            { id: 2117, word: 'Лист', meaning: 'Листок', category: 'природа' },
+            { id: 2118, word: 'Цвет', meaning: 'Цветок', category: 'природа' },
+            { id: 2119, word: 'Трава', meaning: 'Зелёное покрытие', category: 'природа' },
+            { id: 2120, word: 'Куст', meaning: 'Низкорослое растение', category: 'природа' },
+            { id: 2121, word: 'Сосна', meaning: 'Хвойное дерево', category: 'природа' },
+            { id: 2122, word: 'Ель', meaning: 'Хвойное дерево', category: 'природа' },
+            { id: 2123, word: 'Дуб', meaning: 'Лиственное дерево', category: 'природа' },
+            { id: 2124, word: 'Берёза', meaning: 'Лиственное дерево', category: 'природа' },
+            { id: 2125, word: 'Осина', meaning: 'Лиственное дерево', category: 'природа' },
+            { id: 2126, word: 'Клён', meaning: 'Лиственное дерево', category: 'природа' },
+            { id: 2127, word: 'Ива', meaning: 'Лиственное дерево', category: 'природа' },
+            { id: 2128, word: 'Верба', meaning: 'Лиственное дерево', category: 'природа' },
+            { id: 2129, word: 'Тополь', meaning: 'Лиственное дерево', category: 'природа' },
+            { id: 2130, word: 'Ясень', meaning: 'Лиственное дерево', category: 'природа' },
+            { id: 2131, word: 'Вяз', meaning: 'Лиственное дерево', category: 'природа' },
+            { id: 2132, word: 'Липа', meaning: 'Лиственное дерево', category: 'природа' },
+            { id: 2133, word: 'Ольха', meaning: 'Лиственное дерево', category: 'природа' },
+            { id: 2134, word: 'Калина', meaning: 'Кустарник', category: 'природа' },
+            { id: 2135, word: 'Рябина', meaning: 'Дерево с ягодами', category: 'природа' },
+            { id: 2136, word: 'Черёмуха', meaning: 'Дерево с ягодами', category: 'природа' },
+            { id: 2137, word: 'Шиповник', meaning: 'Кустарник', category: 'природа' },
+            { id: 2138, word: 'Крапива', meaning: 'Сорняк', category: 'природа' },
+            { id: 2139, word: 'Лопух', meaning: 'Сорняк', category: 'природа' },
+            // === АБСТРАКТНОЕ (50) ===
+            { id: 2140, word: 'Баять', meaning: 'Говорить', category: 'абстрактное' },
+            { id: 2141, word: 'Гостьба', meaning: 'Пир', category: 'абстрактное' },
+            { id: 2142, word: 'Молвить', meaning: 'Сказать', category: 'абстрактное' },
+            { id: 2143, word: 'Неволя', meaning: 'Рабство', category: 'абстрактное' },
+            { id: 2144, word: 'Недруг', meaning: 'Враг', category: 'абстрактное' },
+            { id: 2145, word: 'Немочь', meaning: 'Болезнь', category: 'абстрактное' },
+            { id: 2146, word: 'Благолепие', meaning: 'Красота', category: 'абстрактное' },
+            { id: 2147, word: 'Благочестие', meaning: 'Набожность', category: 'абстрактное' },
+            { id: 2148, word: 'Благодать', meaning: 'Милость', category: 'абстрактное' },
+            { id: 2149, word: 'Скорбь', meaning: 'Печаль', category: 'абстрактное' },
+            { id: 2150, word: 'Уныние', meaning: 'Подавленность', category: 'абстрактное' },
+            { id: 2151, word: 'Умиление', meaning: 'Радость со слезами', category: 'абстрактное' },
+            { id: 2152, word: 'Рок', meaning: 'Судьба', category: 'абстрактное' },
+            { id: 2153, word: 'Удел', meaning: 'Доля', category: 'абстрактное' },
+            { id: 2154, word: 'Жребий', meaning: 'Рок', category: 'абстрактное' },
+            { id: 2155, word: 'Прок', meaning: 'Толк', category: 'абстрактное' },
+            { id: 2156, word: 'Смута', meaning: 'Беспорядок', category: 'абстрактное' },
+            { id: 2157, word: 'Тлен', meaning: 'Гибель', category: 'абстрактное' },
+            { id: 2158, word: 'Туга', meaning: 'Тоска', category: 'абстрактное' },
+            { id: 2159, word: 'Стыд', meaning: 'Позор', category: 'абстрактное' },
+            { id: 2160, word: 'Срам', meaning: 'Позор', category: 'абстрактное' },
+            { id: 2161, word: 'Добродетель', meaning: 'Положительное качество', category: 'абстрактное' },
+            { id: 2162, word: 'Порок', meaning: 'Недостаток', category: 'абстрактное' },
+            { id: 2163, word: 'Нрав', meaning: 'Характер', category: 'абстрактное' },
+            { id: 2164, word: 'Обычай', meaning: 'Традиция', category: 'абстрактное' },
+            { id: 2165, word: 'Благодарение', meaning: 'Благодарность', category: 'абстрактное' },
+            { id: 2166, word: 'Смиренномудрие', meaning: 'Смиренная мудрость', category: 'абстрактное' },
+            { id: 2167, word: 'Целомудрие', meaning: 'Душевная чистота', category: 'абстрактное' },
+            { id: 2168, word: 'Мзда', meaning: 'Плата', category: 'абстрактное' },
+            { id: 2169, word: 'Тщета', meaning: 'Суета', category: 'абстрактное' },
+            { id: 2170, word: 'Нищета', meaning: 'Бедность', category: 'абстрактное' },
+            { id: 2171, word: 'Скудость', meaning: 'Недостаток', category: 'абстрактное' },
+            { id: 2172, word: 'Праздность', meaning: 'Безделье', category: 'абстрактное' },
+            { id: 2173, word: 'Сласть', meaning: 'Удовольствие', category: 'абстрактное' },
+            { id: 2174, word: 'Горечь', meaning: 'Горе', category: 'абстрактное' },
+            { id: 2175, word: 'Кротость', meaning: 'Мягкость', category: 'абстрактное' },
+            { id: 2176, word: 'Сердечность', meaning: 'Искренность', category: 'абстрактное' },
+            { id: 2177, word: 'Радость', meaning: 'Веселье', category: 'абстрактное' },
+            { id: 2178, word: 'Печаль', meaning: 'Грусть', category: 'абстрактное' },
+            { id: 2179, word: 'Гнев', meaning: 'Злость', category: 'абстрактное' },
+            { id: 2180, word: 'Воля', meaning: 'Свобода', category: 'абстрактное' },
+            { id: 2181, word: 'Доля', meaning: 'Судьба', category: 'абстрактное' },
+            { id: 2182, word: 'Участь', meaning: 'Судьба', category: 'абстрактное' },
+            { id: 2183, word: 'Счастье', meaning: 'Удача', category: 'абстрактное' },
+            { id: 2184, word: 'Горе', meaning: 'Беда', category: 'абстрактное' },
+            { id: 2185, word: 'Душа', meaning: 'Внутренний мир', category: 'абстрактное' },
+            { id: 2186, word: 'Сердце', meaning: 'Центр чувств', category: 'абстрактное' },
+            { id: 2187, word: 'Ум', meaning: 'Интеллект', category: 'абстрактное' },
+            { id: 2188, word: 'Разум', meaning: 'Рассудок', category: 'абстрактное' },
+            { id: 2189, word: 'Чувство', meaning: 'Эмоция', category: 'абстрактное' },
+            // === ОДЕЖДА (30) ===
+            { id: 2190, word: 'Зипун', meaning: 'Крестьянский кафтан', category: 'одежда' },
+            { id: 2191, word: 'Кафтан', meaning: 'Длинная одежда', category: 'одежда' },
+            { id: 2192, word: 'Сарафан', meaning: 'Женская одежда', category: 'одежда' },
+            { id: 2193, word: 'Шушун', meaning: 'Женская верхняя одежда', category: 'одежда' },
+            { id: 2194, word: 'Епанча', meaning: 'Плащ', category: 'одежда' },
+            { id: 2195, word: 'Опашень', meaning: 'Летний кафтан', category: 'одежда' },
+            { id: 2196, word: 'Охабень', meaning: 'Мужская одежда', category: 'одежда' },
+            { id: 2197, word: 'Ферязь', meaning: 'Длинная одежда', category: 'одежда' },
+            { id: 2198, word: 'Терлик', meaning: 'Кафтан с узкими рукавами', category: 'одежда' },
+            { id: 2199, word: 'Тулуп', meaning: 'Шуба', category: 'одежда' },
+            { id: 2200, word: 'Армяк', meaning: 'Кафтан из верблюжьей шерсти', category: 'одежда' },
+            { id: 2201, word: 'Поддёвка', meaning: 'Тёплая одежда', category: 'одежда' },
+            { id: 2202, word: 'Распашница', meaning: 'Женская одежда', category: 'одежда' },
+            { id: 2203, word: 'Душегрейка', meaning: 'Безрукавка', category: 'одежда' },
+            { id: 2204, word: 'Кика', meaning: 'Головной убор', category: 'одежда' },
+            { id: 2205, word: 'Кокошник', meaning: 'Головной убор', category: 'одежда' },
+            { id: 2206, word: 'Повойник', meaning: 'Головной убор', category: 'одежда' },
+            { id: 2207, word: 'Убрус', meaning: 'Платок', category: 'одежда' },
+            { id: 2208, word: 'Фата', meaning: 'Покрывало невесты', category: 'одежда' },
+            { id: 2209, word: 'Лапти', meaning: 'Плетёная обувь', category: 'одежда' },
+            { id: 2210, word: 'Поршни', meaning: 'Кожаная обувь', category: 'одежда' },
+            { id: 2211, word: 'Чоботы', meaning: 'Сапоги', category: 'одежда' },
+            { id: 2212, word: 'Шинель', meaning: 'Военное пальто', category: 'одежда' },
+            { id: 2213, word: 'Сюртук', meaning: 'Длинный сюртук', category: 'одежда' },
+            { id: 2214, word: 'Фрак', meaning: 'Парадная одежда', category: 'одежда' },
+            { id: 2215, word: 'Камзол', meaning: 'Безрукавка', category: 'одежда' },
+            { id: 2216, word: 'Косоворотка', meaning: 'Рубаха с косым воротом', category: 'одежда' },
+            { id: 2217, word: 'Онучи', meaning: 'Обмотки для ног', category: 'одежда' },
+            { id: 2218, word: 'Понёва', meaning: 'Женская юбка', category: 'одежда' },
+            { id: 2219, word: 'Платье', meaning: 'Верхняя одежда', category: 'одежда' },
+            // === ЕДА (30) ===
+            { id: 2220, word: 'Брага', meaning: 'Домашнее пиво', category: 'еда' },
+            { id: 2221, word: 'Ендова', meaning: 'Посудина для пива', category: 'еда' },
+            { id: 2222, word: 'Братина', meaning: 'Сосуд для питья', category: 'еда' },
+            { id: 2223, word: 'Патока', meaning: 'Сладкий сироп', category: 'еда' },
+            { id: 2224, word: 'Квас', meaning: 'Хлебный напиток', category: 'еда' },
+            { id: 2225, word: 'Сыта', meaning: 'Медовый напиток', category: 'еда' },
+            { id: 2226, word: 'Кутья', meaning: 'Поминальная каша', category: 'еда' },
+            { id: 2227, word: 'Взвар', meaning: 'Компот из сухофруктов', category: 'еда' },
+            { id: 2228, word: 'Буйволица', meaning: 'Молоко буйволицы', category: 'еда' },
+            { id: 2229, word: 'Солод', meaning: 'Пророщенное зерно', category: 'еда' },
+            { id: 2230, word: 'Квашня', meaning: 'Кадка для теста', category: 'еда' },
+            { id: 2231, word: 'Уха', meaning: 'Рыбный суп', category: 'еда' },
+            { id: 2232, word: 'Щи', meaning: 'Капустный суп', category: 'еда' },
+            { id: 2233, word: 'Каша', meaning: 'Блюдо из крупы', category: 'еда' },
+            { id: 2234, word: 'Толокно', meaning: 'Мука из овса', category: 'еда' },
+            { id: 2235, word: 'Кисель', meaning: 'Кисло-сладкий напиток', category: 'еда' },
+            { id: 2236, word: 'Мед', meaning: 'Медовый напиток', category: 'еда' },
+            { id: 2237, word: 'Пиво', meaning: 'Пенный напиток', category: 'еда' },
+            { id: 2238, word: 'Ол', meaning: 'Древнее пиво', category: 'еда' },
+            { id: 2239, word: 'Вина', meaning: 'Виноградное вино', category: 'еда' },
+            { id: 2240, word: 'Сбитень', meaning: 'Горячий напиток', category: 'еда' },
+            { id: 2241, word: 'Рыба', meaning: 'Рыба', category: 'еда' },
+            { id: 2242, word: 'Мясо', meaning: 'Мясо', category: 'еда' },
+            { id: 2243, word: 'Хлеб', meaning: 'Хлеб', category: 'еда' },
+            { id: 2244, word: 'Калач', meaning: 'Пшеничный хлеб', category: 'еда' },
+            { id: 2245, word: 'Пирог', meaning: 'Пирог', category: 'еда' },
+            { id: 2246, word: 'Блины', meaning: 'Блины', category: 'еда' },
+            { id: 2247, word: 'Оладьи', meaning: 'Оладьи', category: 'еда' },
+            { id: 2248, word: 'Сыр', meaning: 'Сыр', category: 'еда' },
+            { id: 2249, word: 'Масло', meaning: 'Масло', category: 'еда' },
+            // === АРХИТЕКТУРА (30) ===
+            { id: 2250, word: 'Собор', meaning: 'Главный храм', category: 'архитектура' },
+            { id: 2251, word: 'Церковь', meaning: 'Храм', category: 'архитектура' },
+            { id: 2252, word: 'Колокольня', meaning: 'Башня с колоколами', category: 'архитектура' },
+            { id: 2253, word: 'Часовня', meaning: 'Небольшая церковь', category: 'архитектура' },
+            { id: 2254, word: 'Башня', meaning: 'Высокое строение', category: 'архитектура' },
+            { id: 2255, word: 'Кремль', meaning: 'Крепость', category: 'архитектура' },
+            { id: 2256, word: 'Крепость', meaning: 'Укрепление', category: 'архитектура' },
+            { id: 2257, word: 'Стена', meaning: 'Оборонительная стена', category: 'архитектура' },
+            { id: 2258, word: 'Ворота', meaning: 'Въезд', category: 'архитектура' },
+            { id: 2259, word: 'Мост', meaning: 'Переход', category: 'архитектура' },
+            { id: 2260, word: 'Дворец', meaning: 'Княжеский дом', category: 'архитектура' },
+            { id: 2261, word: 'Особняк', meaning: 'Большой дом', category: 'архитектура' },
+            { id: 2262, word: 'Усадьба', meaning: 'Помещичий дом', category: 'архитектура' },
+            { id: 2263, word: 'Флигель', meaning: 'Пристройка', category: 'архитектура' },
+            { id: 2264, word: 'Колонна', meaning: 'Вертикальная опора', category: 'архитектура' },
+            { id: 2265, word: 'Портик', meaning: 'Крытая галерея', category: 'архитектура' },
+            { id: 2266, word: 'Арка', meaning: 'Дугообразное перекрытие', category: 'архитектура' },
+            { id: 2267, word: 'Купол', meaning: 'Сферическое покрытие', category: 'архитектура' },
+            { id: 2268, word: 'Шпиль', meaning: 'Остроконечная башня', category: 'архитектура' },
+            { id: 2269, word: 'Фронтон', meaning: 'Верхняя часть фасада', category: 'архитектура' },
+            { id: 2270, word: 'Карниз', meaning: 'Выступающий элемент', category: 'архитектура' },
+            { id: 2271, word: 'Парапет', meaning: 'Низкая ограда', category: 'архитектура' },
+            { id: 2272, word: 'Балкон', meaning: 'Выступающая площадка', category: 'архитектура' },
+            { id: 2273, word: 'Терраса', meaning: 'Открытая площадка', category: 'архитектура' },
+            { id: 2274, word: 'Фасад', meaning: 'Лицевая сторона', category: 'архитектура' },
+            { id: 2275, word: 'Здание', meaning: 'Строение', category: 'архитектура' },
+            { id: 2276, word: 'Строение', meaning: 'Постройка', category: 'архитектура' },
+            { id: 2277, word: 'Крыша', meaning: 'Верхняя часть', category: 'архитектура' },
+            { id: 2278, word: 'Окно', meaning: 'Световой проём', category: 'архитектура' },
+            { id: 2279, word: 'Дверь', meaning: 'Вход', category: 'архитектура' },
+            // === ВОЕННОЕ (30) ===
+            { id: 2280, word: 'Брань', meaning: 'Битва', category: 'военное' },
+            { id: 2281, word: 'Ратник', meaning: 'Воин', category: 'военное' },
+            { id: 2282, word: 'Рать', meaning: 'Войско', category: 'военное' },
+            { id: 2283, word: 'Доспехи', meaning: 'Снаряжение', category: 'военное' },
+            { id: 2284, word: 'Меч', meaning: 'Оружие', category: 'военное' },
+            { id: 2285, word: 'Копьё', meaning: 'Оружие', category: 'военное' },
+            { id: 2286, word: 'Лук', meaning: 'Оружие', category: 'военное' },
+            { id: 2287, word: 'Стрела', meaning: 'Снаряд', category: 'военное' },
+            { id: 2288, word: 'Кольчуга', meaning: 'Доспех', category: 'военное' },
+            { id: 2289, word: 'Шлем', meaning: 'Головной убор', category: 'военное' },
+            { id: 2290, word: 'Щит', meaning: 'Защита', category: 'военное' },
+            { id: 2291, word: 'Палаш', meaning: 'Прямой меч', category: 'военное' },
+            { id: 2292, word: 'Сабля', meaning: 'Изогнутый меч', category: 'военное' },
+            { id: 2293, word: 'Булава', meaning: 'Дубинка с шипами', category: 'военное' },
+            { id: 2294, word: 'Кинжал', meaning: 'Короткий меч', category: 'военное' },
+            { id: 2295, word: 'Пика', meaning: 'Длинное копьё', category: 'военное' },
+            { id: 2296, word: 'Арбалет', meaning: 'Механический лук', category: 'военное' },
+            { id: 2297, word: 'Самострел', meaning: 'Арбалет', category: 'военное' },
+            { id: 2298, word: 'Порох', meaning: 'Взрывчатка', category: 'военное' },
+            { id: 2299, word: 'Пушка', meaning: 'Орудие', category: 'военное' },
+            { id: 2300, word: 'Мушкет', meaning: 'Старинное ружьё', category: 'военное' },
+            { id: 2301, word: 'Пистоль', meaning: 'Старинный пистолет', category: 'военное' },
+            { id: 2302, word: 'Сапёр', meaning: 'Военный инженер', category: 'военное' },
+            { id: 2303, word: 'Кавалерия', meaning: 'Конное войско', category: 'военное' },
+            { id: 2304, word: 'Пехота', meaning: 'Пешее войско', category: 'военное' },
+            { id: 2305, word: 'Обоз', meaning: 'Военный транспорт', category: 'военное' },
+            { id: 2306, word: 'Знамя', meaning: 'Воинское знамя', category: 'военное' },
+            { id: 2307, word: 'Хоругвь', meaning: 'Церковное знамя', category: 'военное' },
+            { id: 2308, word: 'Штандарт', meaning: 'Полковое знамя', category: 'военное' },
+            { id: 2309, word: 'Герольд', meaning: 'Вестник', category: 'военное' },
+            // === ТОРГОВЛЯ (20) ===
+            { id: 2310, word: 'Торг', meaning: 'Рынок', category: 'торговля' },
+            { id: 2311, word: 'Лавка', meaning: 'Торговая палатка', category: 'торговля' },
+            { id: 2312, word: 'Товар', meaning: 'Продукт', category: 'торговля' },
+            { id: 2313, word: 'Купец', meaning: 'Торговец', category: 'торговля' },
+            { id: 2314, word: 'Торговля', meaning: 'Обмен товарами', category: 'торговля' },
+            { id: 2315, word: 'Барышник', meaning: 'Мелкий торговец', category: 'торговля' },
+            { id: 2316, word: 'Меняла', meaning: 'Обменщик денег', category: 'торговля' },
+            { id: 2317, word: 'Рынок', meaning: 'Место торговли', category: 'торговля' },
+            { id: 2318, word: 'Ярмарка', meaning: 'Крупный рынок', category: 'торговля' },
+            { id: 2319, word: 'Гостиный двор', meaning: 'Торговые помещения', category: 'торговля' },
+            { id: 2320, word: 'Ларь', meaning: 'Прилавок', category: 'торговля' },
+            { id: 2321, word: 'Пуд', meaning: 'Мера веса', category: 'торговля' },
+            { id: 2322, word: 'Фунт', meaning: 'Мера веса', category: 'торговля' },
+            { id: 2323, word: 'Золотник', meaning: 'Мера веса', category: 'торговля' },
+            { id: 2324, word: 'Лот', meaning: 'Мера веса', category: 'торговля' },
+            { id: 2325, word: 'Берковец', meaning: 'Мера веса', category: 'торговля' },
+            { id: 2326, word: 'Четверть', meaning: 'Мера объёма', category: 'торговля' },
+            { id: 2327, word: 'Гарнец', meaning: 'Мера объёма', category: 'торговля' },
+            { id: 2328, word: 'Ведро', meaning: 'Мера объёма', category: 'торговля' },
+            { id: 2329, word: 'Кружка', meaning: 'Мера объёма', category: 'торговля' },
+        ];
+
+        // =============================================
+        // УПРАВЛЕНИЕ СОСТОЯНИЕМ
+        // =============================================
+        let words = [];
+        let currentFilter = 'all';
+        let currentSort = 'alphabet';
+        let searchQuery = '';
+
+        const grid = document.getElementById('wordGrid');
+        const searchInput = document.getElementById('searchInput');
+        const autocompleteList = document.getElementById('autocompleteList');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const sortSelect = document.getElementById('sortSelect');
+        const totalWordsSpan = document.getElementById('totalWords');
+
+        function loadData() {
+            // Удаляем дубликаты по id
+            const unique = {};
+            DEFAULT_WORDS.forEach(w => { unique[w.id] = w; });
+            words = Object.values(unique);
+            // Добавляем поле date для сортировки (если нет)
+            words.forEach(w => { if (!w.date) w.date = '2020-01-01'; });
+        }
+
+        function render() {
+            let filtered = words.filter(w => {
+                if (currentFilter !== 'all' && w.category !== currentFilter) return false;
+                if (searchQuery) {
+                    const q = searchQuery.toLowerCase();
+                    return w.word.toLowerCase().includes(q) ||
+                           w.meaning.toLowerCase().includes(q) ||
+                           (w.example && w.example.toLowerCase().includes(q)) ||
+                           (w.origin && w.origin.toLowerCase().includes(q));
+                }
+                return true;
+            });
+
+            if (currentSort === 'alphabet') {
+                filtered.sort((a, b) => a.word.localeCompare(b.word));
+            } else if (currentSort === 'date') {
+                filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="empty-state">Слов не найдено<span>Попробуйте изменить запрос</span></div>`;
+            } else {
+                grid.innerHTML = filtered.map(w => `
+                    <div class="word-card" data-id="${w.id}">
+                        <div class="word-header">
+                            <span class="word-title">${w.word}</span>
+                            <span class="word-category">${w.category}</span>
+                        </div>
+                        <div class="word-meaning">${w.meaning}</div>
+                        ${w.example ? `<div class="word-example">${w.example}</div>` : ''}
+                        <div class="word-origin">Происхождение: <span>${w.origin || 'неизвестно'}</span></div>
+                    </div>
+                `).join('');
+            }
+
+            totalWordsSpan.textContent = words.length;
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            render();
+            updateAutocomplete(searchQuery);
+        });
+
+        function updateAutocomplete(query) {
+            if (!query) {
+                autocompleteList.style.display = 'none';
+                return;
+            }
+            const q = query.toLowerCase();
+            const suggestions = words
+                .filter(w => w.word.toLowerCase().startsWith(q))
+                .slice(0, 6);
+            if (suggestions.length === 0) {
+                autocompleteList.style.display = 'none';
+                return;
+            }
+            autocompleteList.innerHTML = suggestions.map(w =>
+                `<div data-word="${w.word}">${w.word}</div>`
+            ).join('');
+            autocompleteList.style.display = 'block';
+            autocompleteList.querySelectorAll('div').forEach(el => {
+                el.addEventListener('click', () => {
+                    searchInput.value = el.dataset.word;
+                    searchQuery = el.dataset.word;
+                    autocompleteList.style.display = 'none';
+                    render();
+                });
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-wrap')) {
+                autocompleteList.style.display = 'none';
+            }
+        });
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                render();
+            });
+        });
+
+        sortSelect.addEventListener('change', (e) => {
+            currentSort = e.target.value;
+            render();
+        });
+
+        loadData();
+        render();
+        console.log('Словарь загружен, слов: ' + words.length);
+    </script>
+</body>
+</html>
